@@ -4,13 +4,13 @@ Planning pack and website prototype for the wedding at **CP Palace and Resort, M
 
 ## Website prototype (Milestone 01)
 
-A mobile-first static site with Welcome, Schedule, Venue, Updates and Help sections. It is built from `event-data.json`, and WhatsApp-only material is filtered out at build time.
+A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, Dress code, Updates and Help sections. It is built from `event-data.json`, and WhatsApp-only material is filtered out at build time.
 
 ```bash
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 35 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 46 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
@@ -49,5 +49,11 @@ All event times below were provided by the family and are marked `confirmed` in 
 ## Safe working convention
 
 Make all schedule changes in `event-data.json` first, validate against `event-data-schema.json`, then publish approved website and WhatsApp variants. Do not publish a URL or send messages without family approval.
+
+To fill in a section that is still "to be announced", edit `event-data.json`:
+
+- **RSVP:** set `rsvp.status` to `"confirmed"`, put the form link in `rsvp.url` and optional wording in `rsvp.note`.
+- **Dress code:** set `dress_code.status` to `"confirmed"` and add `{ "label": "Haldi", "guidance": "..." }` entries to `dress_code.items`.
+- **Vehicles:** update `travel.transport.note` with timings and set `travel.transport.status` to `"confirmed"`.
 
 To post a day-of update, add one approved entry to `content/updates.json`, run `npm run check`, and review the preview before publishing.

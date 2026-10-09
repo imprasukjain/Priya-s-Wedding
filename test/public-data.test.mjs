@@ -49,3 +49,16 @@ test('updates are sorted newest first and approver is not exposed', () => {
   assert.deepEqual(pub.updates.map((u) => u.id), ['b', 'a']);
   assert.equal(JSON.stringify(pub).includes('Approver Name'), false);
 });
+
+test('new public sections are copied by allow-list only', () => {
+  const extra = structuredClone(eventData);
+  extra.contacts[0].private_note = 'secret-contact';
+  extra.travel.stays[0].internal = 'secret-stay';
+  const pub = toPublicData(extra);
+  const json = JSON.stringify(pub);
+  assert.equal(json.includes('secret-'), false);
+  assert.equal(pub.contacts.length, eventData.contacts.length);
+  assert.deepEqual(pub.travel.stays.map((s) => s.audience), eventData.travel.stays.map((s) => s.audience));
+  assert.equal(pub.rsvp.status, 'pending');
+  assert.equal(pub.dressCode.status, 'pending');
+});

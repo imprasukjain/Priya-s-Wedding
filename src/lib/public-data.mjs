@@ -49,11 +49,39 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       name: venue.name,
       locality: venue.locality ?? null,
       address: venue.address ?? null,
+      landmark: venue.landmark ?? null,
       maps_url: venue.maps_url ?? null,
+      maps_label: venue.maps_label ?? null,
+      maps_embed_url: venue.maps_embed_url ?? null,
     },
     days,
     guestServices,
     updates,
+    contacts: (eventData.contacts ?? []).map((c) => ({ name: c.name, phones: [...c.phones] })),
+    travel: {
+      stays: (eventData.travel?.stays ?? []).map((s) => ({
+        id: s.id,
+        name: s.name,
+        audience: s.audience,
+        note: s.note ?? null,
+        maps_url: s.maps_url ?? null,
+        maps_embed_url: s.maps_embed_url ?? null,
+      })),
+      transport: {
+        status: eventData.travel?.transport?.status ?? 'pending',
+        destinations: [...(eventData.travel?.transport?.destinations ?? [])],
+        note: eventData.travel?.transport?.note ?? null,
+      },
+    },
+    rsvp: {
+      status: eventData.rsvp?.status ?? 'pending',
+      url: eventData.rsvp?.url ?? null,
+      note: eventData.rsvp?.note ?? null,
+    },
+    dressCode: {
+      status: eventData.dress_code?.status ?? 'pending',
+      items: (eventData.dress_code?.items ?? []).map((i) => ({ label: i.label, guidance: i.guidance })),
+    },
   });
 }
 

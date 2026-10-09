@@ -70,10 +70,12 @@ The 11:00 AM Lagun Guest lunch (20 Nov) and the 11:30 PM Phere and other rituals
 
 ## Decisions still needed
 
-The exact address/map link, internal venue locations for most functions, on-day contact, audience segmentation for private WhatsApp material, and the final scope for RSVP/travel/stay/photos have not been supplied. Treat them as unresolved, not as blanks to fill with assumptions.
+Supplied since milestone 1: the venue map link (pin on Hotel R B Tower, directly opposite CP Palace and Resort), on-day contacts, guest hotels (CP Palace and Resort, Hotel R B Tower), the Barat hotel (Hotel Upkar Palace), and confirmation that the site will have RSVP, travel/stay and dress code sections. Vehicles will run between the venue, the Mandir, the railway station and the Barat hotel.
+
+Still unresolved: the full postal address, internal venue locations for most functions, vehicle timings, the RSVP method and deadline, dress code details, and audience segmentation for private WhatsApp material. Treat them as unresolved, not as blanks to fill with assumptions; the site shows each as "to be announced".
 
 ## Out of scope for milestone 1
 
 - Public deployment, domain purchase, hosting purchase, or paid WhatsApp service.
 - Automated WhatsApp sending or collection of guest contacts.
-- RSVP, invitation authentication, live location tracking, photography gallery, or payment features.
+- Collecting RSVP responses on the site itself, invitation authentication, live location tracking, photography gallery, or payment features. (The RSVP section links out once the family chooses a method.)

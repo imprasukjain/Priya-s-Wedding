@@ -22,6 +22,7 @@ const lower = everything.toLowerCase();
 
 // 1. Exact public counts per day, read from the rendered HTML.
 const panel = (date) => html.split(`id="day-${date}"`)[1]?.split('</section>')[0] ?? '';
+const panelOf = (id) => html.split(`id="${id}"`)[1]?.split('</section>')[0] ?? '';
 const count = (date) => (panel(date).match(/data-schedule-item=/g) || []).length;
 check('20 November shows exactly 4 public entries', count('2026-11-20') === 4, `found ${count('2026-11-20')}`);
 check('21 November shows exactly 4 public entries', count('2026-11-21') === 4, `found ${count('2026-11-21')}`);
@@ -60,18 +61,38 @@ check('Order within each day is chronological', ['2026-11-20', '2026-11-21'].eve
 }));
 
 // 4. Pending states, not invented details.
-check('Address shown as pending', html.includes('Full address awaiting confirmation'));
-check('Map link shown as pending', html.includes('An approved map link will be added here'));
-check('On-day contact shown as pending', html.includes('on-day contact') && !/tel:/.test(html));
+const { venue, contacts, travel } = eventData;
+check('Venue landmark shown; postal address still marked to follow',
+  html.includes(venue.landmark) && html.includes('Full postal address to follow'));
+check('Venue map opens the approved link', html.includes(`href="${venue.maps_url}"`));
+const telLinks = [...html.matchAll(/href="tel:\+91(\d{10})"/g)].map((m) => m[1]).sort();
+const expectedPhones = contacts.flatMap((c) => c.phones).sort();
+check('Every on-day contact number is a tap-to-call link, and no others',
+  JSON.stringify(telLinks) === JSON.stringify(expectedPhones), `${telLinks.length} links`);
+for (const stay of travel.stays) check(`Stay "${stay.name}" listed`, panelOf('travel').includes(stay.name));
+check('Transport destinations listed with timings pending',
+  travel.transport.destinations.every((d) => panelOf('travel').includes(d)) && panelOf('travel').includes('Timings soon'));
+check('RSVP shown as to be announced', panelOf('rsvp').includes('RSVP opens soon'));
+check('Dress code shown as to be announced', panelOf('dress-code').includes('Dress code to be announced'));
 check('Updates empty state shown', html.includes('No updates yet'));
 
 // 5. Sections and prototype safety.
-for (const id of ['top', 'schedule', 'venue', 'updates', 'help']) {
+for (const id of ['top', 'schedule', 'venue', 'travel', 'rsvp', 'dress-code', 'updates', 'help']) {
   check(`Section #${id} present`, html.includes(`id="${id}"`));
 }
 check('Preview is marked noindex', html.includes('content="noindex, nofollow"'));
-check('No external network URLs or WhatsApp links in output',
-  !/https?:\/\/(?!www\.w3\.org\/2000\/svg)/.test(everything) && !/wa\.me|api\.whatsapp/i.test(everything));
+// Only map links approved in event-data.json may appear; no WhatsApp links or APIs.
+const approvedUrls = new Set(
+  [venue.maps_url, venue.maps_embed_url, eventData.rsvp?.url,
+    ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url])]
+    .filter(Boolean).map((u) => u.replace(/&/g, '&amp;')),
+);
+const foundUrls = [...everything.matchAll(/https?:\/\/[^\s"'<>)]+/g)].map((m) => m[0])
+  .filter((u) => u !== 'http://www.w3.org/2000/svg');
+const unapproved = foundUrls.filter((u) => !approvedUrls.has(u));
+check('Only approved map/RSVP URLs appear in output', unapproved.length === 0, unapproved.join(', '));
+check('No WhatsApp links or APIs in output', !/wa\.me|api\.whatsapp|whatsapp:\/\//i.test(everything));
+check('Map embeds load only on request (no iframe in the page source)', !/<iframe/i.test(html));
 
 const failed = results.filter((r) => !r.ok);
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.detail ? ` (${r.detail})` : ''}`);

@@ -74,6 +74,27 @@
     }
   }
 
+  // ── Maps: load the Google embed only when asked ────────────
+  Array.prototype.forEach.call(document.querySelectorAll('[data-map-src]'), function (btn) {
+    var frame = btn.closest('.map').querySelector('[data-map-frame]');
+    if (!frame) return;
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      if (!frame.firstChild) {
+        var iframe = document.createElement('iframe');
+        iframe.src = btn.getAttribute('data-map-src');
+        iframe.title = btn.getAttribute('data-map-title');
+        iframe.loading = 'lazy';
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.allowFullscreen = true;
+        frame.appendChild(iframe);
+      }
+      frame.hidden = !frame.hidden;
+      btn.querySelector('span').textContent = frame.hidden ? 'Show map here' : 'Hide map';
+      btn.setAttribute('aria-expanded', String(!frame.hidden));
+    });
+  });
+
   // ── Print ──────────────────────────────────────────────────
   var printBtn = document.querySelector('[data-action="print"]');
   if (printBtn && window.print) {
