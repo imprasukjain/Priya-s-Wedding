@@ -1,5 +1,8 @@
 // Builds the static site into dist/.
-//   node scripts/build.mjs            -> preview build (noindex + preview banner)
+//   node scripts/build.mjs            -> preview build (with a "Preview" banner)
+//   PREVIEW=false node scripts/build.mjs -> public build used by GitHub Pages
+// Every build is marked noindex: guests get the link directly, and the page
+// lists family phone numbers, so it should not show up in search results.
 //   THEME=minimal node scripts/build.mjs
 // Also writes dist/embedded/index.html: a single-file variant for the private
 // claude.ai preview (inlined CSS/JS; downloads, print, map embeds, share sheet off).
