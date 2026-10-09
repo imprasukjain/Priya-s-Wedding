@@ -1,0 +1,66 @@
+/* Theme: modern minimal.
+   Every theme defines the same tokens; base.css only reads tokens.
+   --accent is a placeholder until the family selects their accent colour. */
+:root[data-theme="minimal"] {
+  color-scheme: light;
+  --bg: #faf8f5;
+  --surface: #ffffff;
+  --surface-tint: #f3efe9;
+  --ink: #1d1b19;
+  --ink-2: #48433e;
+  --muted: #6e675f;
+  --line: #e6e0d8;
+  --line-strong: #d6cec3;
+
+  --accent: #9b3a32;
+  --accent-ink: #ffffff;
+  --accent-soft: #f6e8e4;
+
+  --confirmed: #2b6a4c;
+  --confirmed-soft: #e4f0e9;
+  --provisional: #8a4b00;
+  --provisional-soft: #fbefd9;
+  --pending: #8a5300;
+  --pending-soft: #fcf3e3;
+  --pending-line: #e7c98f;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-display: var(--font-sans);
+  --font-accent: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
+  --display-weight: 300;
+  --display-tracking: -0.035em;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgb(29 27 25 / 0.04), 0 8px 24px -12px rgb(29 27 25 / 0.12);
+  --hero-glow: radial-gradient(60rem 30rem at 50% -10%, #f3e6df 0%, transparent 60%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="minimal"] {
+    color-scheme: dark;
+    --bg: #141312;
+    --surface: #1c1a19;
+    --surface-tint: #181716;
+    --ink: #f3efea;
+    --ink-2: #d4cec7;
+    --muted: #a39b92;
+    --line: #2e2b28;
+    --line-strong: #3c3834;
+
+    --accent: #e38d80;
+    --accent-ink: #1d1b19;
+    --accent-soft: #3a2421;
+
+    --confirmed: #8fd1ae;
+    --confirmed-soft: #1d2e25;
+    --provisional: #f0bf73;
+    --provisional-soft: #33291a;
+    --pending: #f0c070;
+    --pending-soft: #2e2618;
+    --pending-line: #6b5326;
+
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+    --hero-glow: radial-gradient(60rem 30rem at 50% -10%, #2a1d1a 0%, transparent 60%);
+  }
+}

@@ -3,12 +3,18 @@
     "partner_one": "Priya",
     "partner_two": "Sagar"
   },
-  "event_dates": ["2026-11-20", "2026-11-21"],
+  "event_dates": [
+    "2026-11-20",
+    "2026-11-21"
+  ],
   "venue": {
     "name": "CP Palace and Resort",
     "locality": "Morena",
     "address": null,
-    "maps_url": null
+    "landmark": "In front of Hotel R B Tower",
+    "maps_url": "https://maps.app.goo.gl/XYeJygsmNaURs6M2A",
+    "maps_label": "The map pin is on Hotel R B Tower; CP Palace and Resort is directly in front of it.",
+    "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
   },
   "schedule": [
     {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
@@ -27,11 +33,88 @@
   "guest_services": [
     {"name":"Tea and coffee","availability":"Available throughout 20 November","display_on_website":true}
   ],
+  "contacts": [
+    {"name":"Prasuk","phones":["8819855540","8287659815"]},
+    {"name":"Virendra Kumar Jain","phones":["9827070960"]},
+    {"name":"Paras","phones":["9320555755"]},
+    {"name":"Sooraj","phones":["9098190258"]}
+  ],
+  "travel": {
+    "stays": [
+      {
+        "id": "cp-palace-stay",
+        "name": "CP Palace and Resort",
+        "audience": "guests",
+        "note": "Rooms attached to the wedding venue",
+        "maps_url": null,
+        "maps_embed_url": null
+      },
+      {
+        "id": "rb-tower",
+        "name": "Hotel R B Tower",
+        "audience": "guests",
+        "note": "Directly opposite CP Palace and Resort",
+        "maps_url": "https://maps.app.goo.gl/XYeJygsmNaURs6M2A",
+        "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
+      },
+      {
+        "id": "upkar-palace",
+        "name": "Hotel Upkar Palace",
+        "audience": "barat",
+        "note": "Booked for the Barat",
+        "maps_url": "https://maps.app.goo.gl/1Anjzib3w8kCpYZQ6",
+        "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3570.619089681506!2d77.99118800958875!3d26.500206677602453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976adbe2c7b768f%3A0xdcca235365107e0b!2sHotel%20Upkar%20Palace!5e0!3m2!1sen!2sin!4v1791585923482!5m2!1sen!2sin"
+      }
+    ],
+    "transport": {
+      "status": "pending",
+      "destinations": [
+        "Mandir",
+        "Railway station",
+        "Barat hotel (Hotel Upkar Palace)"
+      ],
+      "note": "Vehicles will be available between the venue and these places. Timings will be shared soon, and announcements will be sent on WhatsApp from time to time."
+    }
+  },
+  "rsvp": {
+    "status": "pending",
+    "url": null,
+    "note": null
+  },
+  "dress_code": {
+    "status": "pending",
+    "items": []
+  },
   "open_questions": [
-    {"question":"What is the complete postal address and approved map link for CP Palace and Resort?","owner":"Family / venue","needed_by":"Before the website is published"},
-    {"question":"Which guest groups may receive each WhatsApp-only notification, and who will approve the final copy?","owner":"Family","needed_by":"Before WhatsApp messages are prepared"},
-    {"question":"What are the locations within the venue for Lagun, dinners, Sangeet/DJ, Barat Aagman, Bhatai Milap, and Stage Program?","owner":"Venue coordinator / family","needed_by":"Before signage and final website copy"},
-    {"question":"Who is the on-day point of contact and what phone number may be displayed to guests?","owner":"Family","needed_by":"Before the website is published"},
-    {"question":"Should the site support RSVPs, travel/stay guidance, dress guidance, photos, or only event information?","owner":"Family","needed_by":"Before design and build scope is locked"}
+    {
+      "question": "What is the complete postal address of CP Palace and Resort? (Landmark and map pin are confirmed: in front of Hotel R B Tower.)",
+      "owner": "Family / venue",
+      "needed_by": "Before the website is published"
+    },
+    {
+      "question": "Which guest groups may receive each WhatsApp-only notification, and who will approve the final copy?",
+      "owner": "Family",
+      "needed_by": "Before WhatsApp messages are prepared"
+    },
+    {
+      "question": "What are the locations within the venue for Lagun, dinners, Sangeet/DJ, Barat Aagman, Bhatai Milap, and Stage Program?",
+      "owner": "Venue coordinator / family",
+      "needed_by": "Before signage and final website copy"
+    },
+    {
+      "question": "How should guests RSVP (e.g. a form link or a message to a family contact), and by what date?",
+      "owner": "Family",
+      "needed_by": "Before the website is published"
+    },
+    {
+      "question": "What is the dress code for each function?",
+      "owner": "Family",
+      "needed_by": "Before the website is published"
+    },
+    {
+      "question": "What are the vehicle timings and pick-up points between the venue, Mandir, railway station and Hotel Upkar Palace?",
+      "owner": "Family / transport coordinator",
+      "needed_by": "Before 20 November"
+    }
   ]
 }

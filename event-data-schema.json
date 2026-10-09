@@ -3,63 +3,307 @@
   "$id": "https://example.invalid/schemas/wedding-event-data.schema.json",
   "title": "Wedding guest experience event data",
   "type": "object",
-  "required": ["couple", "event_dates", "venue", "schedule", "notification_material", "guest_services", "open_questions"],
+  "required": [
+    "couple",
+    "event_dates",
+    "venue",
+    "schedule",
+    "notification_material",
+    "guest_services",
+    "open_questions"
+  ],
   "properties": {
     "couple": {
       "type": "object",
-      "required": ["partner_one", "partner_two"],
+      "required": [
+        "partner_one",
+        "partner_two"
+      ],
       "properties": {
-        "partner_one": { "type": "string", "minLength": 1 },
-        "partner_two": { "type": "string", "minLength": 1 }
+        "partner_one": {
+          "type": "string",
+          "minLength": 1
+        },
+        "partner_two": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "additionalProperties": false
     },
     "event_dates": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "format": "date" }
+      "items": {
+        "type": "string",
+        "format": "date"
+      }
     },
     "venue": {
       "type": "object",
-      "required": ["name", "locality", "address", "maps_url"],
+      "required": [
+        "name",
+        "locality",
+        "address",
+        "maps_url"
+      ],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "locality": { "type": ["string", "null"] },
-        "address": { "type": ["string", "null"] },
-        "maps_url": { "type": ["string", "null"], "format": "uri" }
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locality": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maps_url": {
+          "$ref": "#/$defs/mapsUrl"
+        },
+        "landmark": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maps_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "maps_embed_url": {
+          "$ref": "#/$defs/mapsEmbedUrl"
+        }
       },
       "additionalProperties": false
     },
     "schedule": {
       "type": "array",
-      "items": { "$ref": "#/$defs/scheduleItem" }
+      "items": {
+        "$ref": "#/$defs/scheduleItem"
+      }
     },
     "notification_material": {
       "type": "array",
-      "items": { "$ref": "#/$defs/notificationItem" }
+      "items": {
+        "$ref": "#/$defs/notificationItem"
+      }
     },
     "guest_services": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "availability", "display_on_website"],
+        "required": [
+          "name",
+          "availability",
+          "display_on_website"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "availability": { "type": "string" },
-          "display_on_website": { "const": true }
+          "name": {
+            "type": "string"
+          },
+          "availability": {
+            "type": "string"
+          },
+          "display_on_website": {
+            "const": true
+          }
         },
         "additionalProperties": false
       }
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "phones"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phones": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^[6-9][0-9]{9}$",
+              "description": "10-digit Indian mobile number without +91"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "travel": {
+      "type": "object",
+      "required": [
+        "stays",
+        "transport"
+      ],
+      "properties": {
+        "stays": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "audience",
+              "note",
+              "maps_url",
+              "maps_embed_url"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "audience": {
+                "enum": [
+                  "guests",
+                  "barat"
+                ]
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "maps_url": {
+                "$ref": "#/$defs/mapsUrl"
+              },
+              "maps_embed_url": {
+                "$ref": "#/$defs/mapsEmbedUrl"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "transport": {
+          "type": "object",
+          "required": [
+            "status",
+            "destinations",
+            "note"
+          ],
+          "properties": {
+            "status": {
+              "$ref": "#/$defs/contentStatus"
+            },
+            "destinations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "note": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "rsvp": {
+      "type": "object",
+      "required": [
+        "status",
+        "url",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/contentStatus"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dress_code": {
+      "type": "object",
+      "required": [
+        "status",
+        "items"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/contentStatus"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "guidance"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "guidance": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "open_questions": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["question", "owner", "needed_by"],
+        "required": [
+          "question",
+          "owner",
+          "needed_by"
+        ],
         "properties": {
-          "question": { "type": "string" },
-          "owner": { "type": "string" },
-          "needed_by": { "type": "string" }
+          "question": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "needed_by": {
+            "type": "string"
+          }
         },
         "additionalProperties": false
       }
@@ -68,37 +312,134 @@
   "$defs": {
     "scheduleItem": {
       "type": "object",
-      "required": ["id", "date", "start_time", "title", "location", "timing_status", "display_on_website", "channels"],
+      "required": [
+        "id",
+        "date",
+        "start_time",
+        "title",
+        "location",
+        "timing_status",
+        "display_on_website",
+        "channels"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-        "date": { "type": "string", "format": "date" },
-        "start_time": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "end_time": { "type": ["string", "null"], "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "title": { "type": "string" },
-        "location": { "type": ["string", "null"] },
-        "timing_status": { "enum": ["confirmed", "provisional"] },
-        "display_on_website": { "const": true },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "start_time": {
+          "type": "string",
+          "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+        },
+        "end_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "location": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timing_status": {
+          "enum": [
+            "confirmed",
+            "provisional"
+          ]
+        },
+        "display_on_website": {
+          "const": true
+        },
         "channels": {
           "type": "array",
           "minItems": 1,
-          "items": { "enum": ["website", "whatsapp"] }
+          "items": {
+            "enum": [
+              "website",
+              "whatsapp"
+            ]
+          }
         }
       },
       "additionalProperties": false
     },
     "notificationItem": {
       "type": "object",
-      "required": ["id", "date", "time", "title", "timing_status", "channels", "display_on_website"],
+      "required": [
+        "id",
+        "date",
+        "time",
+        "title",
+        "timing_status",
+        "channels",
+        "display_on_website"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-        "date": { "type": "string", "format": "date" },
-        "time": { "type": "string", "pattern": "^[0-2][0-9]:[0-5][0-9]$" },
-        "title": { "type": "string" },
-        "timing_status": { "enum": ["confirmed", "provisional"] },
-        "channels": { "type": "array", "minItems": 1, "items": { "const": "whatsapp" } },
-        "display_on_website": { "const": false }
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "timing_status": {
+          "enum": [
+            "confirmed",
+            "provisional"
+          ]
+        },
+        "channels": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "const": "whatsapp"
+          }
+        },
+        "display_on_website": {
+          "const": false
+        }
       },
       "additionalProperties": false
+    },
+    "contentStatus": {
+      "enum": [
+        "pending",
+        "confirmed"
+      ]
+    },
+    "mapsUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "pattern": "^https://(maps\\.app\\.goo\\.gl|www\\.google\\.com/maps)/"
+    },
+    "mapsEmbedUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "pattern": "^https://www\\.google\\.com/maps/embed\\?"
     }
   },
   "additionalProperties": false
