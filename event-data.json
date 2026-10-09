@@ -1,0 +1,37 @@
+{
+  "couple": {
+    "partner_one": "Priya",
+    "partner_two": "Sagar"
+  },
+  "event_dates": ["2026-11-20", "2026-11-21"],
+  "venue": {
+    "name": "CP Palace and Resort",
+    "locality": "Morena",
+    "address": null,
+    "maps_url": null
+  },
+  "schedule": [
+    {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"haldi","date":"2026-11-20","start_time":"13:30","end_time":null,"title":"Haldi","location":"Near the swimming pool at CP Palace","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"dinner-20-nov","date":"2026-11-20","start_time":"17:30","end_time":null,"title":"Dinner Starts","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"sangeet-dj","date":"2026-11-20","start_time":"20:00","end_time":null,"title":"Sangeet and Fun DJ Night","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"barat-aagman","date":"2026-11-21","start_time":"16:00","end_time":null,"title":"Barat Aagman","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"dinner-21-nov","date":"2026-11-21","start_time":"16:00","end_time":"22:00","title":"Dinner Starts","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"bhatai-milap","date":"2026-11-21","start_time":"19:00","end_time":null,"title":"Bhatai Milap","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"stage-program","date":"2026-11-21","start_time":"21:00","end_time":null,"title":"Stage Program","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]}
+  ],
+  "notification_material": [
+    {"id":"lagun-guest-lunch","date":"2026-11-20","time":"11:00","title":"Lunch for Lagun Guest","timing_status":"confirmed","channels":["whatsapp"],"display_on_website":false},
+    {"id":"phere-rituals","date":"2026-11-21","time":"23:30","title":"Phere and other rituals","timing_status":"confirmed","channels":["whatsapp"],"display_on_website":false}
+  ],
+  "guest_services": [
+    {"name":"Tea and coffee","availability":"Available throughout 20 November","display_on_website":true}
+  ],
+  "open_questions": [
+    {"question":"What is the complete postal address and approved map link for CP Palace and Resort?","owner":"Family / venue","needed_by":"Before the website is published"},
+    {"question":"Which guest groups may receive each WhatsApp-only notification, and who will approve the final copy?","owner":"Family","needed_by":"Before WhatsApp messages are prepared"},
+    {"question":"What are the locations within the venue for Lagun, dinners, Sangeet/DJ, Barat Aagman, Bhatai Milap, and Stage Program?","owner":"Venue coordinator / family","needed_by":"Before signage and final website copy"},
+    {"question":"Who is the on-day point of contact and what phone number may be displayed to guests?","owner":"Family","needed_by":"Before the website is published"},
+    {"question":"Should the site support RSVPs, travel/stay guidance, dress guidance, photos, or only event information?","owner":"Family","needed_by":"Before design and build scope is locked"}
+  ]
+}
