@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 46 acceptance checks
+npm run check      # unit tests + build + 57 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -29,15 +29,17 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 | Haldi location "Near the swimming pool at CP Palace" | Pass | Shown on the Haldi card and in the Venue section |
 | Tea/coffee note under 20 November | Pass | Shown in the 20 Nov panel only, not as a timed event |
 | Every schedule item shows a timing status | Pass | 8 "Confirmed" pills |
-| Venue location and map | Pass | Landmark "In front of Hotel R B Tower" and the approved Google Maps link. The full postal address is still marked "to follow" |
+| Venue address and map | Pass | "In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001" and the approved Google Maps link |
 | On-day contacts | Pass | Every number in `contacts` is a tap-to-call link, and there are no others |
 | Travel & stay | Pass | CP Palace and Resort, Hotel R B Tower (guests) and Hotel Upkar Palace (Barat) are listed. Vehicle destinations are listed with timings pending |
-| RSVP and dress code | Pass | Both show a visible "To be announced" state until the family supplies details |
-| Missing details visibly pending | Pass | Amber badges with dashed boxes for the postal address, areas within the venue, vehicle timings, RSVP and dress code. Nothing is made up |
+| RSVP | Pass | The deadline (Sunday, 15 November) is shown. The form opens WhatsApp addressed only to the approved RSVP number, and a plain WhatsApp link is shown when JavaScript is off. The site has no form action, network call or storage, so it collects nothing |
+| Aadhaar requirement | Pass | Shown in both the RSVP and Travel & stay sections |
+| Dress code | Pass | Lagun, Haldi, Sangeet and Dinner guidance is shown in the Dress code section and on each matching schedule card |
+| Missing details visibly pending | Pass | Amber badges with dashed boxes for areas within the venue and vehicle timings. Nothing is made up |
 | Legible at 360px | Pass | Headless Chromium at 360×800: no horizontal scroll (`scrollWidth` = 360), see `docs/screenshots/mobile-360.png` |
 | Keyboard navigable | Pass | Tab order: skip link → monogram → nav → quick actions → day tab → day panel → calendar/print. Arrow keys, Home and End switch day tabs. All interactive targets are ≥ 44px tall |
 | Works without JavaScript | Pass | Both days are shown one after the other; tabs, share and print are progressive enhancements |
-| No domain, hosting, live link, WhatsApp API, paid tool or message send | Pass | The only external URLs in the output are the map links approved in `event-data.json`. Google Maps is contacted only when a guest presses "Show map here" (no iframe in the page source). Sharing uses the device's own share sheet or copy-to-clipboard only, and only when a guest presses the button. The preview is marked `noindex` |
+| No domain, hosting, live link, WhatsApp API, paid tool or message send | Pass | The only external URLs in the output are the map links and the RSVP WhatsApp chat link approved in `event-data.json`. RSVP uses a WhatsApp click-to-chat link that the guest sends themselves, not the WhatsApp API. Google Maps is contacted only when a guest presses "Show map here" (no iframe in the page source). Sharing uses the device's own share sheet or copy-to-clipboard only, and only when a guest presses the button. The preview is marked `noindex` |
 
 ## Pre-publish review aids
 

@@ -59,6 +59,7 @@ test('new public sections are copied by allow-list only', () => {
   assert.equal(json.includes('secret-'), false);
   assert.equal(pub.contacts.length, eventData.contacts.length);
   assert.deepEqual(pub.travel.stays.map((s) => s.audience), eventData.travel.stays.map((s) => s.audience));
-  assert.equal(pub.rsvp.status, 'pending');
-  assert.equal(pub.dressCode.status, 'pending');
+  assert.equal(pub.rsvp.whatsapp_number, eventData.rsvp.whatsapp_number);
+  assert.equal(pub.days[0].items.find((i) => i.id === 'haldi').attire, 'Ethnic Indian wear / pastel kurta');
+  assert.equal(pub.days[1].items.find((i) => i.id === 'barat-aagman').attire, null);
 });

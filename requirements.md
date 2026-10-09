@@ -72,10 +72,12 @@ The 11:00 AM Lagun Guest lunch (20 Nov) and the 11:30 PM Phere and other rituals
 
 Supplied since milestone 1: the venue map link (pin on Hotel R B Tower, directly opposite CP Palace and Resort), on-day contacts, guest hotels (CP Palace and Resort, Hotel R B Tower), the Barat hotel (Hotel Upkar Palace), and confirmation that the site will have RSVP, travel/stay and dress code sections. Vehicles will run between the venue, the Mandir, the railway station and the Barat hotel.
 
-Still unresolved: the full postal address, internal venue locations for most functions, vehicle timings, the RSVP method and deadline, dress code details, and audience segmentation for private WhatsApp material. Treat them as unresolved, not as blanks to fill with assumptions; the site shows each as "to be announced".
+Also supplied: the full venue address (In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001); RSVP by 15 November via a WhatsApp message to the family, to help book and allot hotel rooms; the Aadhaar card requirement for hotel check-in; and dress codes for Lagun, Haldi, Sangeet and dinners.
+
+Still unresolved: internal venue locations for most functions, vehicle timings, dress code for Barat Aagman, Bhatai Milap and the Stage Program, and audience segmentation for private WhatsApp material. Treat them as unresolved, not as blanks to fill with assumptions; the site shows each as "to be announced".
 
 ## Out of scope for milestone 1
 
 - Public deployment, domain purchase, hosting purchase, or paid WhatsApp service.
 - Automated WhatsApp sending or collection of guest contacts.
-- Collecting RSVP responses on the site itself, invitation authentication, live location tracking, photography gallery, or payment features. (The RSVP section links out once the family chooses a method.)
+- Collecting RSVP responses on the site itself, invitation authentication, live location tracking, photography gallery, or payment features. (RSVPs are sent by the guest on WhatsApp; the site stores nothing.)
