@@ -101,7 +101,7 @@ check('Updates empty state shown', html.includes('No updates yet'));
 for (const id of ['top', 'schedule', 'venue', 'travel', 'rsvp', 'dress-code', 'updates', 'help']) {
   check(`Section #${id} present`, html.includes(`id="${id}"`));
 }
-check('Preview is marked noindex', html.includes('content="noindex, nofollow"'));
+check('Page is kept out of search engines (noindex)', html.includes('content="noindex, nofollow"'));
 // Only map/RSVP links approved in event-data.json may appear; no WhatsApp links or APIs.
 const rsvpChat = rsvp.whatsapp_number ? `https://wa.me/91${rsvp.whatsapp_number}` : null;
 const approvedUrls = new Set(

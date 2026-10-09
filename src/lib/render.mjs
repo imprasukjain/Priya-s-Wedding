@@ -593,7 +593,10 @@ ${inlineJs}
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(couple)} · ${esc(range)}</title>
   <meta name="description" content="${esc(`Schedule, venue and updates for ${couple}’s wedding, ${range}, ${venueLine}.`)}">
-  ${preview ? '<meta name="robots" content="noindex, nofollow">' : ''}
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${esc(`${couple}’s Wedding · ${range}`)}">
+  <meta property="og:description" content="${esc(`Schedule, venue, RSVP and day-of updates · ${venueLine}`)}">
   <meta name="theme-color" content="#faf8f5">
   <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#1d1b19'/><text x='32' y='41' font-family='Georgia,serif' font-size='26' fill='#fff' text-anchor='middle'>${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}</text></svg>`)}">
   <link rel="stylesheet" href="styles.css">

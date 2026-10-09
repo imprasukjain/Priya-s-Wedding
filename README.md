@@ -29,6 +29,14 @@ The build also writes `dist/embedded/index.html`, a single-file copy used for th
 
 The accent colour (`--accent` in `src/themes/minimal.css`) is a placeholder until the family chooses one.
 
+## Live site
+
+**https://imprasukjain.github.io/Priya-s-Wedding/**
+
+`.github/workflows/deploy-pages.yml` rebuilds and republishes the site on every push to `main`, and only if the tests and acceptance checks pass. To change anything guests see, edit `event-data.json` (or `content/updates.json` for a day-of notice) and merge to `main`; the site updates within a couple of minutes. The page is marked `noindex`, so it stays out of search results and guests reach it through the shared link.
+
+One-time setup (repository owner): **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
 ## Planning documents
 
 | File | Purpose |
