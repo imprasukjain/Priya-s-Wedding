@@ -1,6 +1,8 @@
 // Milestone 01 acceptance checks against the built dist/ output.
 // Run with: npm run verify   (builds first)
 import { readdir, readFile } from 'node:fs/promises';
+import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadValidatedData } from '../src/lib/load-data.mjs';
 import { formatTime, icsUtcStamp } from '../src/lib/format.mjs';
 
@@ -11,10 +13,14 @@ const check = (name, ok, detail = '') => results.push({ name, ok: Boolean(ok), d
 const { eventData } = await loadValidatedData();
 check('event-data.json and content/updates.json are schema-valid', true);
 
-const files = await readdir(dist);
+const files = (await readdir(dist, { recursive: true, withFileTypes: true }))
+  .filter((e) => e.isFile())
+  .map((e) => relative(fileURLToPath(dist), join(e.parentPath ?? e.path, e.name)).split(sep).join('/'));
 const outputs = Object.fromEntries(
   await Promise.all(files.map(async (f) => [f, await readFile(new URL(f, dist), 'utf8')])),
 );
+check('Preview variant built and free of downloads, print, map embeds and share sheet',
+  outputs['embedded/index.html'] && !/<html[\s>]|<head[\s>]|download>|data-action="print"|data-map-src|data-action="share"/.test(outputs['embedded/index.html'].replace(/<script>[\s\S]*?<\/script>/g, '')));
 const html = outputs['index.html'];
 const ics = outputs['schedule.ics'];
 const everything = Object.values(outputs).join('\n');
@@ -72,6 +78,8 @@ for (const stay of travel.stays) check(`Stay "${stay.name}" listed`, panelOf('tr
 check('Transport destinations listed with timings pending',
   travel.transport.destinations.every((d) => panelOf('travel').includes(d)) && panelOf('travel').includes('Timings soon'));
 const { rsvp, dress_code: dressCode } = eventData;
+check('RSVP send control is a real link to the approved number',
+  panelOf('rsvp').includes(`data-rsvp-send href="https://wa.me/91${rsvp.whatsapp_number}?text=`));
 check('RSVP form and no-JS fallback point to the approved WhatsApp number',
   panelOf('rsvp').includes(`data-wa-url="https://wa.me/91${rsvp.whatsapp_number}"`) &&
   panelOf('rsvp').includes(`href="https://wa.me/91${rsvp.whatsapp_number}?text=`));

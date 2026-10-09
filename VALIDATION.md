@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 57 acceptance checks
+npm run check      # unit tests + build + 59 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
