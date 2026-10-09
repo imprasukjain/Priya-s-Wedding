@@ -12,6 +12,11 @@ const esc = (value) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+// Features the hosted site supports. The claude.ai preview frame blocks file
+// downloads, printing, embedded maps and the share sheet, so the preview
+// build turns those off (see renderPage's `embedded` option).
+let features = { downloads: true, print: true, mapEmbeds: true, shareSheet: true };
+
 const icon = (name) => `<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;
 
 const ICONS = `
@@ -132,15 +137,16 @@ function renderSchedule(pub) {
       <div class="days">${panels}
       </div>
       ${generalServices}
-      <div class="schedule-actions">
-        <a class="btn btn--ghost" href="schedule.ics" download>${icon('download')}<span>Add to calendar</span></a>
-        <button class="btn btn--ghost" type="button" data-action="print" hidden>${icon('print')}<span>Print schedule</span></button>
-      </div>
+      ${features.downloads || features.print ? `<div class="schedule-actions">
+        ${features.downloads ? `<a class="btn btn--ghost" href="schedule.ics" download>${icon('download')}<span>Add to calendar</span></a>` : ''}
+        ${features.print ? `<button class="btn btn--ghost" type="button" data-action="print" hidden>${icon('print')}<span>Print schedule</span></button>` : ''}
+      </div>` : ''}
     </div>
   </section>`;
 }
 
-function mapBlock({ title, mapsUrl, embedUrl }) {
+function mapBlock({ title, mapsUrl, embedUrl: rawEmbedUrl }) {
+  const embedUrl = features.mapEmbeds ? rawEmbedUrl : null;
   if (!mapsUrl && !embedUrl) return '';
   return `
           <div class="map">
@@ -316,7 +322,7 @@ function rsvpForm(pub) {
           <label class="field__label" for="rsvp-note">Anything else? <span class="field__hint">optional</span></label>
           <textarea class="input" id="rsvp-note" name="note" rows="2" maxlength="300" placeholder="Names of guests, special requests…"></textarea>
         </div>
-        <button class="btn btn--primary btn--block" type="submit">${icon('send')}<span>Send RSVP on WhatsApp</span></button>
+        <a class="btn btn--primary btn--block" data-rsvp-send href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>Send RSVP on WhatsApp</span></a>
         <p class="rsvp__fine">This opens WhatsApp with your RSVP written for you — just press send. Nothing is stored on this website.</p>
       </form>
       <div class="card rsvp-fallback" data-rsvp-fallback>
@@ -413,7 +419,7 @@ function renderUpdates(pub) {
           <p class="share__text">Send guests here for the schedule and any day-of changes.</p>
         </div>
         <div class="share__actions">
-          <button class="btn btn--primary" type="button" data-action="share" hidden>${icon('share')}<span>Share</span></button>
+          ${features.shareSheet ? `<button class="btn btn--primary" type="button" data-action="share" hidden>${icon('share')}<span>Share</span></button>` : ''}
           <button class="btn btn--ghost" type="button" data-action="copy" hidden>${icon('copy')}<span>Copy message</span></button>
         </div>
         <p class="share__status" role="status" aria-live="polite"></p>
@@ -431,7 +437,7 @@ function renderHelp(pub) {
     ...(pub.rsvp.deadline ? [['When should I RSVP?', `By ${longDay(pub.rsvp.deadline)}, using the RSVP section above. It helps the family book and allot hotel rooms.`]] : []),
     ...(pub.travel.check_in_note ? [['Do I need ID for the hotel?', pub.travel.check_in_note]] : []),
     ['Where will changes be announced?', 'In the Updates section of this page and on WhatsApp. Please check before heading to each function.'],
-    ['Can I add the functions to my calendar?', 'Yes — use “Add to calendar” under the schedule to download all the public functions at once.'],
+    ...(features.downloads ? [['Can I add the functions to my calendar?', 'Yes — use “Add to calendar” under the schedule to download all the public functions at once.']] : []),
   ];
   const contacts = pub.contacts.length
     ? `<ul class="contacts">${pub.contacts
@@ -479,29 +485,17 @@ function renderHelp(pub) {
   </section>`;
 }
 
-export function renderPage(pub, { theme, generatedAt, preview }) {
+export function renderPage(pub, { generatedAt, preview, embedded = false, inlineCss = '', inlineJs = '' }) {
+  features = embedded
+    ? { downloads: false, print: false, mapEmbeds: false, shareSheet: false }
+    : { downloads: true, print: true, mapEmbeds: true, shareSheet: true };
   const couple = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
   const range = dateRange(pub.event_dates);
   const venueLine = [pub.venue.name, pub.venue.locality].filter(Boolean).join(', ');
   const latest = pub.updates[0];
   const shareText = `${couple}’s wedding · ${range} · ${venueLine}. Schedule, venue details and day-of updates: {url}`;
   const monogram = `${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}`;
-
-  return `<!doctype html>
-<html lang="en" data-theme="${esc(theme)}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>${esc(couple)} · ${esc(range)}</title>
-  <meta name="description" content="${esc(`Schedule, venue and updates for ${couple}’s wedding, ${range}, ${venueLine}.`)}">
-  ${preview ? '<meta name="robots" content="noindex, nofollow">' : ''}
-  <meta name="theme-color" content="#faf8f5">
-  <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#1d1b19'/><text x='32' y='41' font-family='Georgia,serif' font-size='26' fill='#fff' text-anchor='middle'>${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}</text></svg>`)}">
-  <link rel="stylesheet" href="styles.css">
-  <script>document.documentElement.classList.add('js')</script>
-  <script src="app.js" defer></script>
-</head>
-<body>
+  const content = `
 ${ICONS}
   <a class="skip-link" href="#main">Skip to content</a>
   ${preview ? `<div class="preview-bar" role="note">Preview · not yet approved for publishing</div>` : ''}
@@ -575,7 +569,39 @@ ${renderHelp(pub)}
     </div>
   </footer>
   <template id="share-message">${esc(shareText)}</template>
-</body>
+`;
+
+  if (embedded) {
+    // Fragment for the claude.ai preview: the host supplies the document
+    // skeleton, so CSS and JS are inlined and no <html>/<head> is emitted.
+    return `<title>${esc(couple)}’s Wedding</title>
+<style>
+${inlineCss}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+${content}
+<script>
+${inlineJs}
+</script>
+`;
+  }
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>${esc(couple)} · ${esc(range)}</title>
+  <meta name="description" content="${esc(`Schedule, venue and updates for ${couple}’s wedding, ${range}, ${venueLine}.`)}">
+  ${preview ? '<meta name="robots" content="noindex, nofollow">' : ''}
+  <meta name="theme-color" content="#faf8f5">
+  <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#1d1b19'/><text x='32' y='41' font-family='Georgia,serif' font-size='26' fill='#fff' text-anchor='middle'>${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}</text></svg>`)}">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+${content}</body>
 </html>
 `;
 }

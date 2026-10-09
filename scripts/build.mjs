@@ -1,6 +1,8 @@
 // Builds the static site into dist/.
 //   node scripts/build.mjs            -> preview build (noindex + preview banner)
 //   THEME=minimal node scripts/build.mjs
+// Also writes dist/embedded/index.html: a single-file variant for the private
+// claude.ai preview (inlined CSS/JS; downloads, print, map embeds, share sheet off).
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { loadValidatedData } from '../src/lib/load-data.mjs';
 import { toPublicData } from '../src/lib/public-data.mjs';
@@ -16,6 +18,7 @@ const { eventData, updates } = await loadValidatedData();
 const pub = toPublicData(eventData, updates);
 const generatedAt = new Date();
 
+const js = await readFile(new URL('src/assets/app.js', root), 'utf8');
 const css = (
   await Promise.all([
     readFile(new URL(`src/themes/${theme}.css`, root), 'utf8'),
@@ -24,11 +27,13 @@ const css = (
 ).join('\n');
 
 await rm(out, { recursive: true, force: true });
-await mkdir(out, { recursive: true });
+await mkdir(new URL('embedded/', out), { recursive: true });
 await Promise.all([
-  writeFile(new URL('index.html', out), renderPage(pub, { theme, generatedAt, preview })),
+  writeFile(new URL('index.html', out), renderPage(pub, { generatedAt, preview })),
+  writeFile(new URL('embedded/index.html', out),
+    renderPage(pub, { generatedAt, preview, embedded: true, inlineCss: css, inlineJs: js })),
   writeFile(new URL('styles.css', out), css),
-  writeFile(new URL('app.js', out), await readFile(new URL('src/assets/app.js', root), 'utf8')),
+  writeFile(new URL('app.js', out), js),
   writeFile(new URL('schedule.ics', out), renderIcs(pub, generatedAt)),
 ]);
 

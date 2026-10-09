@@ -1,7 +1,9 @@
 /* Theme: modern minimal.
    Every theme defines the same tokens; base.css only reads tokens.
+   Light values sit on :root. Dark values apply with the OS dark setting
+   unless data-theme="light" is set, and always with data-theme="dark".
    --accent is a placeholder until the family selects their accent colour. */
-:root[data-theme="minimal"] {
+:root {
   color-scheme: light;
   --bg: #faf8f5;
   --surface: #ffffff;
@@ -37,7 +39,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root[data-theme="minimal"] {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
     --bg: #141312;
     --surface: #1c1a19;
@@ -63,4 +65,31 @@
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
     --hero-glow: radial-gradient(60rem 30rem at 50% -10%, #2a1d1a 0%, transparent 60%);
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #141312;
+  --surface: #1c1a19;
+  --surface-tint: #181716;
+  --ink: #f3efea;
+  --ink-2: #d4cec7;
+  --muted: #a39b92;
+  --line: #2e2b28;
+  --line-strong: #3c3834;
+
+  --accent: #e38d80;
+  --accent-ink: #1d1b19;
+  --accent-soft: #3a2421;
+
+  --confirmed: #8fd1ae;
+  --confirmed-soft: #1d2e25;
+  --provisional: #f0bf73;
+  --provisional-soft: #33291a;
+  --pending: #f0c070;
+  --pending-soft: #2e2618;
+  --pending-line: #6b5326;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --hero-glow: radial-gradient(60rem 30rem at 50% -10%, #2a1d1a 0%, transparent 60%);
 }

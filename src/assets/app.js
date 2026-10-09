@@ -112,9 +112,10 @@
       });
     });
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (!form.reportValidity()) return;
+    // The send control is a real link (works on every phone and browser);
+    // its WhatsApp text is rebuilt whenever the form changes.
+    var send = form.querySelector('[data-rsvp-send]');
+    var compose = function () {
       var f = form.elements;
       var lines = [
         'Hi! RSVP for ' + form.getAttribute('data-couple') + '’s wedding (' + form.getAttribute('data-dates') + ')',
@@ -126,10 +127,20 @@
       ];
       if (f.arrival.value.trim()) lines.push('Arrival: ' + f.arrival.value.trim());
       if (f.note.value.trim()) lines.push('Note: ' + f.note.value.trim());
-      var url = form.getAttribute('data-wa-url') + '?text=' + encodeURIComponent(lines.join('\n'));
-      var win = window.open(url, '_blank');
-      if (win) win.opener = null;
-      else location.href = url;
+      send.href = form.getAttribute('data-wa-url') + '?text=' + encodeURIComponent(lines.join('\n'));
+    };
+    form.addEventListener('input', compose);
+    form.addEventListener('change', compose);
+    form.addEventListener('click', function (e) { if (e.target.closest('[data-step]')) compose(); });
+    compose();
+
+    send.addEventListener('click', function (e) {
+      compose();
+      if (!form.reportValidity()) e.preventDefault();
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.reportValidity()) send.click();
     });
   }
 
