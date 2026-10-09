@@ -95,6 +95,44 @@
     });
   });
 
+  // ── RSVP: compose a WhatsApp message; nothing is stored or sent by the site ──
+  var form = document.querySelector('[data-rsvp-form]');
+  if (form) {
+    form.hidden = false;
+    var rooms = form.querySelector('[data-rooms]');
+    var syncRooms = function () { rooms.hidden = form.elements.room.value !== 'Yes'; };
+    Array.prototype.forEach.call(form.elements.room, function (r) { r.addEventListener('change', syncRooms); });
+    syncRooms();
+
+    Array.prototype.forEach.call(form.querySelectorAll('[data-step]'), function (btn) {
+      btn.addEventListener('click', function () {
+        var input = btn.parentNode.querySelector('input');
+        var next = (parseInt(input.value, 10) || 0) + parseInt(btn.getAttribute('data-step'), 10);
+        input.value = Math.min(Number(input.max), Math.max(Number(input.min), next));
+      });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      var f = form.elements;
+      var lines = [
+        'Hi! RSVP for ' + form.getAttribute('data-couple') + '’s wedding (' + form.getAttribute('data-dates') + ')',
+        '',
+        'Name: ' + f.name.value.trim(),
+        'Guests (including me): ' + f.guests.value,
+        'Attending: ' + f.days.value,
+        'Hotel room needed: ' + f.room.value + (f.room.value === 'Yes' ? ' (' + f.rooms.value + (f.rooms.value === '1' ? ' room)' : ' rooms)') : '')
+      ];
+      if (f.arrival.value.trim()) lines.push('Arrival: ' + f.arrival.value.trim());
+      if (f.note.value.trim()) lines.push('Note: ' + f.note.value.trim());
+      var url = form.getAttribute('data-wa-url') + '?text=' + encodeURIComponent(lines.join('\n'));
+      var win = window.open(url, '_blank');
+      if (win) win.opener = null;
+      else location.href = url;
+    });
+  }
+
   // ── Print ──────────────────────────────────────────────────
   var printBtn = document.querySelector('[data-action="print"]');
   if (printBtn && window.print) {

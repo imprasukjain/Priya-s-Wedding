@@ -196,6 +196,12 @@
             "additionalProperties": false
           }
         },
+        "check_in_note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "transport": {
           "type": "object",
           "required": [
@@ -229,12 +235,22 @@
       "type": "object",
       "required": [
         "status",
+        "method",
         "url",
+        "whatsapp_number",
+        "deadline",
         "note"
       ],
       "properties": {
         "status": {
           "$ref": "#/$defs/contentStatus"
+        },
+        "method": {
+          "enum": [
+            "whatsapp",
+            "link"
+          ],
+          "description": "whatsapp: guests fill a short form that opens WhatsApp with their RSVP pre-written to whatsapp_number. link: the button opens url (e.g. a Google Form)."
         },
         "url": {
           "type": [
@@ -243,6 +259,21 @@
           ],
           "format": "uri",
           "pattern": "^https://"
+        },
+        "whatsapp_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[6-9][0-9]{9}$",
+          "description": "10-digit Indian mobile number that receives RSVPs"
+        },
+        "deadline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
         },
         "note": {
           "type": [
@@ -277,6 +308,14 @@
               },
               "guidance": {
                 "type": "string"
+              },
+              "applies_to": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "description": "Schedule item ids this guidance applies to"
               }
             },
             "additionalProperties": false

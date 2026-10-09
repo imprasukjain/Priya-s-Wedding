@@ -62,8 +62,7 @@ check('Order within each day is chronological', ['2026-11-20', '2026-11-21'].eve
 
 // 4. Pending states, not invented details.
 const { venue, contacts, travel } = eventData;
-check('Venue landmark shown; postal address still marked to follow',
-  html.includes(venue.landmark) && html.includes('Full postal address to follow'));
+check('Venue postal address shown', panelOf('venue').includes(venue.address));
 check('Venue map opens the approved link', html.includes(`href="${venue.maps_url}"`));
 const telLinks = [...html.matchAll(/href="tel:\+91(\d{10})"/g)].map((m) => m[1]).sort();
 const expectedPhones = contacts.flatMap((c) => c.phones).sort();
@@ -72,8 +71,22 @@ check('Every on-day contact number is a tap-to-call link, and no others',
 for (const stay of travel.stays) check(`Stay "${stay.name}" listed`, panelOf('travel').includes(stay.name));
 check('Transport destinations listed with timings pending',
   travel.transport.destinations.every((d) => panelOf('travel').includes(d)) && panelOf('travel').includes('Timings soon'));
-check('RSVP shown as to be announced', panelOf('rsvp').includes('RSVP opens soon'));
-check('Dress code shown as to be announced', panelOf('dress-code').includes('Dress code to be announced'));
+const { rsvp, dress_code: dressCode } = eventData;
+check('RSVP form and no-JS fallback point to the approved WhatsApp number',
+  panelOf('rsvp').includes(`data-wa-url="https://wa.me/91${rsvp.whatsapp_number}"`) &&
+  panelOf('rsvp').includes(`href="https://wa.me/91${rsvp.whatsapp_number}?text=`));
+check('RSVP deadline shown', panelOf('rsvp').includes('Please RSVP by Sunday, 15 November'));
+check('Aadhaar requirement shown in RSVP and Travel',
+  panelOf('rsvp').includes(travel.check_in_note) && panelOf('travel').includes(travel.check_in_note));
+check('RSVP is not collected or stored by the site (no form action, no fetch)',
+  !/<form[^>]*\saction=/i.test(html) && !/fetch\(|XMLHttpRequest|localStorage|sendBeacon/.test(outputs['app.js']));
+for (const item of dressCode.items) {
+  check(`Dress code "${item.label}: ${item.guidance}" shown`, panelOf('dress-code').includes(item.guidance));
+  for (const id of item.applies_to) {
+    const card = html.split(`data-schedule-item="${id}"`)[1]?.split('</li>')[0] ?? '';
+    check(`Dress code shown on the ${id} schedule card`, card.includes(item.guidance));
+  }
+}
 check('Updates empty state shown', html.includes('No updates yet'));
 
 // 5. Sections and prototype safety.
@@ -81,7 +94,8 @@ for (const id of ['top', 'schedule', 'venue', 'travel', 'rsvp', 'dress-code', 'u
   check(`Section #${id} present`, html.includes(`id="${id}"`));
 }
 check('Preview is marked noindex', html.includes('content="noindex, nofollow"'));
-// Only map links approved in event-data.json may appear; no WhatsApp links or APIs.
+// Only map/RSVP links approved in event-data.json may appear; no WhatsApp links or APIs.
+const rsvpChat = rsvp.whatsapp_number ? `https://wa.me/91${rsvp.whatsapp_number}` : null;
 const approvedUrls = new Set(
   [venue.maps_url, venue.maps_embed_url, eventData.rsvp?.url,
     ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url])]
@@ -89,9 +103,11 @@ const approvedUrls = new Set(
 );
 const foundUrls = [...everything.matchAll(/https?:\/\/[^\s"'<>)]+/g)].map((m) => m[0])
   .filter((u) => u !== 'http://www.w3.org/2000/svg');
-const unapproved = foundUrls.filter((u) => !approvedUrls.has(u));
+const unapproved = foundUrls.filter((u) => !approvedUrls.has(u) && !(rsvpChat && (u === rsvpChat || u.startsWith(`${rsvpChat}?text=`))));
 check('Only approved map/RSVP URLs appear in output', unapproved.length === 0, unapproved.join(', '));
-check('No WhatsApp links or APIs in output', !/wa\.me|api\.whatsapp|whatsapp:\/\//i.test(everything));
+check('No WhatsApp API use; click-to-chat only to the approved RSVP number',
+  !/api\.whatsapp|graph\.facebook|whatsapp:\/\//i.test(everything) &&
+  [...everything.matchAll(/wa\.me\/(\d+)/g)].every((m) => m[1] === `91${rsvp.whatsapp_number}`));
 check('Map embeds load only on request (no iframe in the page source)', !/<iframe/i.test(html));
 
 const failed = results.filter((r) => !r.ok);

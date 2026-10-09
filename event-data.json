@@ -3,14 +3,11 @@
     "partner_one": "Priya",
     "partner_two": "Sagar"
   },
-  "event_dates": [
-    "2026-11-20",
-    "2026-11-21"
-  ],
+  "event_dates": ["2026-11-20", "2026-11-21"],
   "venue": {
     "name": "CP Palace and Resort",
     "locality": "Morena",
-    "address": null,
+    "address": "In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001",
     "landmark": "In front of Hotel R B Tower",
     "maps_url": "https://maps.app.goo.gl/XYeJygsmNaURs6M2A",
     "maps_label": "The map pin is on Hotel R B Tower; CP Palace and Resort is directly in front of it.",
@@ -66,6 +63,7 @@
         "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3570.619089681506!2d77.99118800958875!3d26.500206677602453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976adbe2c7b768f%3A0xdcca235365107e0b!2sHotel%20Upkar%20Palace!5e0!3m2!1sen!2sin!4v1791585923482!5m2!1sen!2sin"
       }
     ],
+    "check_in_note": "Guests checking in to the hotels must bring their Aadhaar card.",
     "transport": {
       "status": "pending",
       "destinations": [
@@ -77,20 +75,48 @@
     }
   },
   "rsvp": {
-    "status": "pending",
+    "status": "confirmed",
+    "method": "whatsapp",
     "url": null,
-    "note": null
+    "whatsapp_number": "8819855540",
+    "deadline": "2026-11-15",
+    "note": "Your RSVP helps us book and allot hotel rooms for you."
   },
   "dress_code": {
-    "status": "pending",
-    "items": []
+    "status": "confirmed",
+    "items": [
+      {
+        "label": "Lagun",
+        "guidance": "Suits / formals",
+        "applies_to": [
+          "lagun"
+        ]
+      },
+      {
+        "label": "Haldi",
+        "guidance": "Ethnic Indian wear / pastel kurta",
+        "applies_to": [
+          "haldi"
+        ]
+      },
+      {
+        "label": "Sangeet",
+        "guidance": "Vibrant Indian kurta / ethnic Indian dress",
+        "applies_to": [
+          "sangeet-dj"
+        ]
+      },
+      {
+        "label": "Dinner",
+        "guidance": "No dress code",
+        "applies_to": [
+          "dinner-20-nov",
+          "dinner-21-nov"
+        ]
+      }
+    ]
   },
   "open_questions": [
-    {
-      "question": "What is the complete postal address of CP Palace and Resort? (Landmark and map pin are confirmed: in front of Hotel R B Tower.)",
-      "owner": "Family / venue",
-      "needed_by": "Before the website is published"
-    },
     {
       "question": "Which guest groups may receive each WhatsApp-only notification, and who will approve the final copy?",
       "owner": "Family",
@@ -102,19 +128,14 @@
       "needed_by": "Before signage and final website copy"
     },
     {
-      "question": "How should guests RSVP (e.g. a form link or a message to a family contact), and by what date?",
-      "owner": "Family",
-      "needed_by": "Before the website is published"
-    },
-    {
-      "question": "What is the dress code for each function?",
-      "owner": "Family",
-      "needed_by": "Before the website is published"
-    },
-    {
       "question": "What are the vehicle timings and pick-up points between the venue, Mandir, railway station and Hotel Upkar Palace?",
       "owner": "Family / transport coordinator",
       "needed_by": "Before 20 November"
+    },
+    {
+      "question": "What is the dress code for Barat Aagman, Bhatai Milap and the Stage Program, if any?",
+      "owner": "Family",
+      "needed_by": "Before the website is published"
     }
   ]
 }

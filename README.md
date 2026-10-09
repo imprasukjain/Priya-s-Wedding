@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 46 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 57 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
@@ -52,8 +52,8 @@ Make all schedule changes in `event-data.json` first, validate against `event-da
 
 To fill in a section that is still "to be announced", edit `event-data.json`:
 
-- **RSVP:** set `rsvp.status` to `"confirmed"`, put the form link in `rsvp.url` and optional wording in `rsvp.note`.
-- **Dress code:** set `dress_code.status` to `"confirmed"` and add `{ "label": "Haldi", "guidance": "..." }` entries to `dress_code.items`.
+- **RSVP:** guests fill a short form (name, number of guests, days attending, hotel room and rooms needed, arrival). Pressing "Send RSVP on WhatsApp" opens WhatsApp with the RSVP already written, addressed to `rsvp.whatsapp_number`, and the guest presses send. The site itself stores nothing. To send RSVPs to someone else, change that number. To use a Google Form instead, set `rsvp.method` to `"link"` and put the form address in `rsvp.url`.
+- **Dress code:** edit `dress_code.items`. Each item's `applies_to` lists the schedule ids whose cards show that guidance.
 - **Vehicles:** update `travel.transport.note` with timings and set `travel.transport.status` to `"confirmed"`.
 
 To post a day-of update, add one approved entry to `content/updates.json`, run `npm run check`, and review the preview before publishing.

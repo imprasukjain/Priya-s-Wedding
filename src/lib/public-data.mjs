@@ -15,6 +15,13 @@ const byStartTime = (a, b) => a.start_time.localeCompare(b.start_time);
 export function toPublicData(eventData, updatesFile = { updates: [] }) {
   const { couple, event_dates, venue } = eventData;
 
+  const dressItems = (eventData.dress_code?.items ?? []).map((i) => ({
+    label: i.label,
+    guidance: i.guidance,
+    applies_to: [...(i.applies_to ?? [])],
+  }));
+  const attireFor = (id) => dressItems.find((i) => i.applies_to.includes(id))?.guidance ?? null;
+
   const schedule = eventData.schedule
     .filter(isPublicScheduleItem)
     .map((item) => ({
@@ -25,6 +32,7 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       title: item.title,
       location: item.location ?? null,
       timing_status: item.timing_status,
+      attire: attireFor(item.id),
     }));
 
   const days = [...event_dates].sort().map((date) => ({
@@ -67,6 +75,7 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
         maps_url: s.maps_url ?? null,
         maps_embed_url: s.maps_embed_url ?? null,
       })),
+      check_in_note: eventData.travel?.check_in_note ?? null,
       transport: {
         status: eventData.travel?.transport?.status ?? 'pending',
         destinations: [...(eventData.travel?.transport?.destinations ?? [])],
@@ -75,12 +84,15 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
     },
     rsvp: {
       status: eventData.rsvp?.status ?? 'pending',
+      method: eventData.rsvp?.method ?? null,
       url: eventData.rsvp?.url ?? null,
+      whatsapp_number: eventData.rsvp?.whatsapp_number ?? null,
+      deadline: eventData.rsvp?.deadline ?? null,
       note: eventData.rsvp?.note ?? null,
     },
     dressCode: {
       status: eventData.dress_code?.status ?? 'pending',
-      items: (eventData.dress_code?.items ?? []).map((i) => ({ label: i.label, guidance: i.guidance })),
+      items: dressItems,
     },
   });
 }

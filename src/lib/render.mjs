@@ -31,6 +31,8 @@ const ICONS = `
   <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16.5v2M19 16.5v2M4 16.5h16v-4l-2-5.5H6L4 12.5v4ZM4 12.5h16M7.5 14.5h.01M16.5 14.5h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m8.5 12.2 2.4 2.3 4.6-4.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M9 4.5 4 7l1.8 4 2.2-1v9.5h8V10l2.2 1L20 7l-5-2.5a3 3 0 0 1-6 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10 14M20.5 3.5l-6.5 17-4-6.5-6.5-4 17-6.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="11" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.8 15.5c.5-1.3 1.5-2 2.7-2s2.2.7 2.7 2M13.5 10h4.5M13.5 13.5h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </svg>`;
 
 const pending = (label = 'Pending') =>
@@ -76,6 +78,7 @@ function renderItem(item) {
             </div>
             <p class="event__timing${item.end_time ? ' event__timing--strong' : ' visually-hidden'}">${esc(timing)}</p>
             ${location}
+            ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(item.attire)}</span></p>` : ''}
             <span class="event__next" hidden>Up next</span>
           </div>
         </li>`;
@@ -242,6 +245,7 @@ function renderTravel(pub) {
       </div>
       ${group('Where guests are staying', guests)}
       ${group('For the Barat', barat)}
+      ${aadhaarNote(pub)}
     </div>
   </section>`;
 }
@@ -256,22 +260,96 @@ function comingSoon({ iconName, title, text }) {
       </div>`;
 }
 
+function rsvpForm(pub) {
+  const { rsvp } = pub;
+  const couple = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
+  const days = pub.event_dates;
+  const dayOptions = [
+    ...(days.length > 1 ? [['All days', 'All days']] : []),
+    ...days.map((d) => [`${dayMonth(d)} only`, `${shortDay(d).weekday}, ${shortDay(d).label} only`]),
+  ];
+  const radio = (name, value, label, checked) => `
+              <label class="choice">
+                <input type="radio" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}>
+                <span>${esc(label)}</span>
+              </label>`;
+  const wa = `91${rsvp.whatsapp_number}`;
+  const fallbackText = `Hi! RSVP for ${couple}’s wedding (${dateRange(days)}).\nName:\nNumber of guests:\nHotel room needed (Yes/No):`;
+
+  return `
+      <form class="card rsvp-form" data-rsvp-form data-wa-url="https://wa.me/${esc(wa)}" data-couple="${esc(couple)}" data-dates="${esc(dateRange(days))}" hidden>
+        <div class="field">
+          <label class="field__label" for="rsvp-name">Your name</label>
+          <input class="input" id="rsvp-name" name="name" type="text" autocomplete="name" required maxlength="80" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label class="field__label" for="rsvp-guests">Number of guests <span class="field__hint">including you</span></label>
+          <div class="stepper">
+            <button type="button" class="stepper__btn" data-step="-1" aria-label="One fewer guest">−</button>
+            <input class="input stepper__input" id="rsvp-guests" name="guests" type="number" inputmode="numeric" min="1" max="30" value="1" required>
+            <button type="button" class="stepper__btn" data-step="1" aria-label="One more guest">+</button>
+          </div>
+        </div>
+        <fieldset class="field">
+          <legend class="field__label">Attending</legend>
+          <div class="choices">${dayOptions.map(([value, label], i) => radio('days', value, label, i === 0)).join('')}
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend class="field__label">Do you need a hotel room?</legend>
+          <div class="choices">${radio('room', 'Yes', 'Yes, please', true)}${radio('room', 'No', 'No, thanks', false)}
+          </div>
+        </fieldset>
+        <div class="field" data-rooms>
+          <label class="field__label" for="rsvp-rooms">Rooms needed</label>
+          <div class="stepper">
+            <button type="button" class="stepper__btn" data-step="-1" aria-label="One fewer room">−</button>
+            <input class="input stepper__input" id="rsvp-rooms" name="rooms" type="number" inputmode="numeric" min="1" max="10" value="1">
+            <button type="button" class="stepper__btn" data-step="1" aria-label="One more room">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="rsvp-arrival">Arrival <span class="field__hint">optional</span></label>
+          <input class="input" id="rsvp-arrival" name="arrival" type="text" maxlength="80" placeholder="e.g. 20 Nov morning, by train">
+        </div>
+        <div class="field">
+          <label class="field__label" for="rsvp-note">Anything else? <span class="field__hint">optional</span></label>
+          <textarea class="input" id="rsvp-note" name="note" rows="2" maxlength="300" placeholder="Names of guests, special requests…"></textarea>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit">${icon('send')}<span>Send RSVP on WhatsApp</span></button>
+        <p class="rsvp__fine">This opens WhatsApp with your RSVP written for you — just press send. Nothing is stored on this website.</p>
+      </form>
+      <div class="card rsvp-fallback" data-rsvp-fallback>
+        <p>Send your name, number of guests and whether you need a hotel room on WhatsApp.</p>
+        <a class="btn btn--primary" href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>RSVP on WhatsApp</span></a>
+      </div>`;
+}
+
+const aadhaarNote = (pub) => pub.travel.check_in_note
+  ? `<div class="callout">${icon('id')}<p><strong>Staying at a hotel?</strong> ${esc(pub.travel.check_in_note)}</p></div>`
+  : '';
+
 function renderRsvp(pub) {
   const { rsvp } = pub;
-  const body = rsvp.status === 'confirmed' && rsvp.url
-    ? `<div class="card rsvp">
-        ${rsvp.note ? `<p class="rsvp__note">${esc(rsvp.note)}</p>` : ''}
+  const deadline = rsvp.deadline ? `Please RSVP by ${longDay(rsvp.deadline)}.` : '';
+  let body;
+  if (rsvp.status === 'confirmed' && rsvp.method === 'whatsapp' && rsvp.whatsapp_number) body = rsvpForm(pub);
+  else if (rsvp.status === 'confirmed' && rsvp.url) {
+    body = `<div class="card rsvp">
         <a class="btn btn--primary" href="${esc(rsvp.url)}" target="_blank" rel="noopener">${icon('check')}<span>RSVP now</span></a>
-      </div>`
-    : comingSoon({ iconName: 'check', title: 'RSVP opens soon', text: 'How to RSVP will be shared here and on WhatsApp. Please keep an eye on this page.' });
+      </div>`;
+  } else body = comingSoon({ iconName: 'check', title: 'RSVP opens soon', text: 'How to RSVP will be shared here and on WhatsApp. Please keep an eye on this page.' });
+
   return `
   <section class="section" id="rsvp" aria-labelledby="rsvp-title">
     <div class="container">
       <header class="section__header">
         <p class="eyebrow">RSVP</p>
         <h2 class="section__title" id="rsvp-title">Let us know you’re coming</h2>
+        ${deadline || rsvp.note ? `<p class="section__lede">${deadline ? `<strong class="deadline">${esc(deadline)}</strong> ` : ''}${esc(rsvp.note ?? '')}</p>` : ''}
       </header>
       ${body}
+      ${aadhaarNote(pub)}
     </div>
   </section>`;
 }
@@ -279,7 +357,14 @@ function renderRsvp(pub) {
 function renderDressCode(pub) {
   const { dressCode } = pub;
   const body = dressCode.items.length
-    ? `<ul class="card dress">${dressCode.items.map((i) => `<li><span class="areas__event">${esc(i.label)}</span><span class="areas__place">${esc(i.guidance)}</span></li>`).join('')}</ul>`
+    ? `<ul class="dress">${dressCode.items
+        .map((i) => `
+        <li class="dress__item">
+          <span class="stay__icon">${icon('shirt')}</span>
+          <div><p class="dress__label">${esc(i.label)}</p><p class="dress__guidance">${esc(i.guidance)}</p></div>
+        </li>`)
+        .join('')}
+      </ul>`
     : comingSoon({ iconName: 'shirt', title: 'Dress code to be announced', text: 'Outfit guidance for each function will be added here once the family finalises it.' });
   return `
   <section class="section" id="dress-code" aria-labelledby="dress-title">
@@ -341,8 +426,10 @@ const formatPhone = (p) => `${p.slice(0, 5)} ${p.slice(5)}`;
 
 function renderHelp(pub) {
   const faqs = [
-    ['When and where is the wedding?', `${dateRange(pub.event_dates)} at ${pub.venue.name}${pub.venue.landmark ? ` (${pub.venue.landmark.toLowerCase()})` : ''}${pub.venue.locality ? `, ${pub.venue.locality}` : ''}.`],
+    ['When and where is the wedding?', `${dateRange(pub.event_dates)} at ${pub.venue.name}, ${pub.venue.address ?? [pub.venue.landmark, pub.venue.locality].filter(Boolean).join(', ')}.`],
     ['How do I get from the station to the venue?', pub.travel.transport.note || 'Transport details will be shared soon.'],
+    ...(pub.rsvp.deadline ? [['When should I RSVP?', `By ${longDay(pub.rsvp.deadline)}, using the RSVP section above. It helps the family book and allot hotel rooms.`]] : []),
+    ...(pub.travel.check_in_note ? [['Do I need ID for the hotel?', pub.travel.check_in_note]] : []),
     ['Where will changes be announced?', 'In the Updates section of this page and on WhatsApp. Please check before heading to each function.'],
     ['Can I add the functions to my calendar?', 'Yes — use “Add to calendar” under the schedule to download all the public functions at once.'],
   ];
@@ -451,6 +538,11 @@ ${ICONS}
         <a class="quick" href="#schedule">
           <span class="quick__icon">${icon('calendar')}</span>
           <span class="quick__text"><span class="quick__label">View schedule</span><span class="quick__hint">${pub.days.reduce((n, d) => n + d.items.length, 0)} functions over ${pub.days.length} days</span></span>
+          ${icon('arrow')}
+        </a>
+        <a class="quick quick--primary" href="#rsvp">
+          <span class="quick__icon">${icon('send')}</span>
+          <span class="quick__text"><span class="quick__label">RSVP</span><span class="quick__hint">${pub.rsvp.deadline ? `Please reply by ${esc(dayMonth(pub.rsvp.deadline))}` : 'Opens soon'}</span></span>
           ${icon('arrow')}
         </a>
         <a class="quick" href="#venue">
