@@ -274,13 +274,18 @@ function rsvpForm(pub) {
     ...(days.length > 1 ? [['All days', 'All days']] : []),
     ...days.map((d) => [`${dayMonth(d)} only`, `${shortDay(d).weekday}, ${shortDay(d).label} only`]),
   ];
-  const radio = (name, value, label, checked) => `
+  const arrivalDays = [
+    [`Before ${dayMonth(days[0])}`, `Before ${shortDay(days[0]).label}`],
+    ...days.map((d) => [`${shortDay(d).weekday}, ${dayMonth(d)}`, `${shortDay(d).weekday}, ${shortDay(d).label}`]),
+  ];
+  const travelModes = ['Train', 'Bus', 'Car / taxi', 'Other'];
+  const radio = (name, value, label, checked, required = false) => `
               <label class="choice">
-                <input type="radio" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}>
+                <input type="radio" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}${required ? ' required' : ''}>
                 <span>${esc(label)}</span>
               </label>`;
   const wa = `91${rsvp.whatsapp_number}`;
-  const fallbackText = `Hi! RSVP for ${couple}’s wedding (${dateRange(days)}).\nName:\nNumber of guests:\nHotel room needed (Yes/No):`;
+  const fallbackText = `Hi! RSVP for ${couple}’s wedding (${dateRange(days)}).\nName:\nNumber of guests:\nHotel room needed (Yes/No):\nETA (day and time):\nMode of travel:`;
 
   return `
       <form class="card rsvp-form" data-rsvp-form data-wa-url="https://wa.me/${esc(wa)}" data-couple="${esc(couple)}" data-dates="${esc(dateRange(days))}" hidden>
@@ -314,10 +319,23 @@ function rsvpForm(pub) {
             <button type="button" class="stepper__btn" data-step="1" aria-label="One more room">+</button>
           </div>
         </div>
-        <div class="field">
-          <label class="field__label" for="rsvp-arrival">Arrival <span class="field__hint">optional</span></label>
-          <input class="input" id="rsvp-arrival" name="arrival" type="text" maxlength="80" placeholder="e.g. 20 Nov morning, by train">
-        </div>
+        <fieldset class="field">
+          <legend class="field__label">Expected arrival (ETA) <span class="field__hint">in Morena</span></legend>
+          <div class="choices">${arrivalDays.map(([value, label], i) => radio('eta_day', value, label, i === 1)).join('')}
+          </div>
+          <label class="visually-hidden" for="rsvp-eta-time">Arrival time</label>
+          <div class="eta-time">
+            <input class="input" id="rsvp-eta-time" name="eta_time" type="time" step="900">
+            <span class="field__hint">Approximate time, if you know it</span>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend class="field__label">Mode of travel</legend>
+          <div class="choices">${travelModes.map((m, i) => radio('travel', m, m, false, i === 0)).join('')}
+          </div>
+          <label class="visually-hidden" for="rsvp-travel-details">Travel details</label>
+          <input class="input" id="rsvp-travel-details" name="travel_details" type="text" maxlength="100" placeholder="Train or bus number, pickup needed? (optional)">
+        </fieldset>
         <div class="field">
           <label class="field__label" for="rsvp-note">Anything else? <span class="field__hint">optional</span></label>
           <textarea class="input" id="rsvp-note" name="note" rows="2" maxlength="300" placeholder="Names of guests, special requests…"></textarea>

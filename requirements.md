@@ -63,18 +63,18 @@ Only website-eligible `schedule` entries may be rendered on the site. `notificat
 
 | Date | Public website content |
 | --- | --- |
-| 20 Nov | 9:00 AM Lagun; 1:30 PM Haldi near the swimming pool at CP Palace; 5:30 PM Dinner Starts; 8:00 PM Sangeet and Fun DJ Night; tea and coffee throughout the day. |
-| 21 Nov | 4:00 PM Barat Aagman; 4:00 PM Dinner Starts (ends sharply at 10:00 PM); 7:00 PM Bhatai Milap; 9:00 PM Stage Program. |
+| 20 Nov | 9:00 AM Lagun (Outer Hall); 11:00 AM Lunch; 1:30 PM Haldi near the swimming pool at CP Banquet; 5:30 PM Dinner Starts (Garden Area); 7:30 PM Sangeet and Fun DJ Night (Outer Hall); tea and coffee throughout the day. |
+| 21 Nov | 4:00 PM Barat Aagman (Main Gate of Banquet Hall); 4:00 PM Dinner Starts, ends sharply at 10:00 PM (Garden Area); 7:00 PM Bhatai Milap (Outer Hall); 9:00 PM Reception (Main Hall); 11:00 PM Phere; tea and coffee throughout the day. |
 
-The 11:00 AM Lagun Guest lunch (20 Nov) and the 11:30 PM Phere and other rituals (21 Nov) are WhatsApp-only and excluded from that table by design.
+Update 10 Oct 2026: the venue is now called CP Banquet. The family moved the Lunch (20 Nov) and the Phere (21 Nov, now 11:00 PM) from WhatsApp-only to the public schedule, and replaced the Stage Program with the Reception.
 
 ## Decisions still needed
 
-Supplied since milestone 1: the venue map link (pin on Hotel R B Tower, directly opposite CP Palace and Resort), on-day contacts, guest hotels (CP Palace and Resort, Hotel R B Tower), the Barat hotel (Hotel Upkar Palace), and confirmation that the site will have RSVP, travel/stay and dress code sections. Vehicles will run between the venue, the Mandir, the railway station and the Barat hotel.
+Supplied since milestone 1: the venue map link (pin on Hotel R B Tower, directly opposite the venue, then called CP Palace and Resort), on-day contacts, guest hotels (rooms at the venue, Hotel R B Tower), the Barat hotel (Hotel Upkar Palace), and confirmation that the site will have RSVP, travel/stay and dress code sections. Vehicles will run between the venue, the Mandir, the railway station and the Barat hotel.
 
 Also supplied: the full venue address (In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001); RSVP by 15 November via a WhatsApp message to the family, to help book and allot hotel rooms; the Aadhaar card requirement for hotel check-in; and dress codes for Lagun, Haldi, Sangeet and dinners.
 
-Still unresolved: internal venue locations for most functions, vehicle timings, dress code for Barat Aagman, Bhatai Milap and the Stage Program, and audience segmentation for private WhatsApp material. Treat them as unresolved, not as blanks to fill with assumptions; the site shows each as "to be announced".
+Still unresolved: venue areas for the Lunch and the Phere, vehicle timings, and dress code for Barat Aagman, Bhatai Milap, Reception and Phere. Treat them as unresolved, not as blanks to fill with assumptions; the site shows each as "to be announced".
 
 ## Out of scope for milestone 1
 

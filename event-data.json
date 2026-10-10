@@ -5,30 +5,30 @@
   },
   "event_dates": ["2026-11-20", "2026-11-21"],
   "venue": {
-    "name": "CP Palace and Resort",
+    "name": "CP Banquet",
     "locality": "Morena",
     "address": "In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001",
     "landmark": "In front of Hotel R B Tower",
     "maps_url": "https://maps.app.goo.gl/XYeJygsmNaURs6M2A",
-    "maps_label": "The map pin is on Hotel R B Tower; CP Palace and Resort is directly in front of it.",
+    "maps_label": "The map pin is on Hotel R B Tower; CP Banquet is directly in front of it.",
     "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
   },
   "schedule": [
-    {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"haldi","date":"2026-11-20","start_time":"13:30","end_time":null,"title":"Haldi","location":"Near the swimming pool at CP Palace","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"dinner-20-nov","date":"2026-11-20","start_time":"17:30","end_time":null,"title":"Dinner Starts","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"sangeet-dj","date":"2026-11-20","start_time":"20:00","end_time":null,"title":"Sangeet and Fun DJ Night","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"barat-aagman","date":"2026-11-21","start_time":"16:00","end_time":null,"title":"Barat Aagman","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"dinner-21-nov","date":"2026-11-21","start_time":"16:00","end_time":"22:00","title":"Dinner Starts","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"bhatai-milap","date":"2026-11-21","start_time":"19:00","end_time":null,"title":"Bhatai Milap","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"stage-program","date":"2026-11-21","start_time":"21:00","end_time":null,"title":"Stage Program","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]}
+    {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"lunch-20-nov","date":"2026-11-20","start_time":"11:00","end_time":null,"title":"Lunch","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"haldi","date":"2026-11-20","start_time":"13:30","end_time":null,"title":"Haldi","location":"Near the swimming pool at CP Banquet","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"dinner-20-nov","date":"2026-11-20","start_time":"17:30","end_time":null,"title":"Dinner Starts","location":"Garden Area","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"sangeet-dj","date":"2026-11-20","start_time":"19:30","end_time":null,"title":"Sangeet and Fun DJ Night","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"barat-aagman","date":"2026-11-21","start_time":"16:00","end_time":null,"title":"Barat Aagman","location":"Main Gate of Banquet Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"dinner-21-nov","date":"2026-11-21","start_time":"16:00","end_time":"22:00","title":"Dinner Starts","location":"Garden Area","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"bhatai-milap","date":"2026-11-21","start_time":"19:00","end_time":null,"title":"Bhatai Milap","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"reception","date":"2026-11-21","start_time":"21:00","end_time":null,"title":"Reception","location":"Main Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"phere","date":"2026-11-21","start_time":"23:00","end_time":null,"title":"Phere","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]}
   ],
-  "notification_material": [
-    {"id":"lagun-guest-lunch","date":"2026-11-20","time":"11:00","title":"Lunch for Lagun Guest","timing_status":"confirmed","channels":["whatsapp"],"display_on_website":false},
-    {"id":"phere-rituals","date":"2026-11-21","time":"23:30","title":"Phere and other rituals","timing_status":"confirmed","channels":["whatsapp"],"display_on_website":false}
-  ],
+  "notification_material": [],
   "guest_services": [
-    {"name":"Tea and coffee","availability":"Available throughout 20 November","display_on_website":true}
+    {"name":"Tea and coffee","availability":"Available throughout 20 November","display_on_website":true},
+    {"name":"Tea and coffee","availability":"Available throughout 21 November","display_on_website":true}
   ],
   "contacts": [
     {"name":"Prasuk","phones":["8819855540","8287659815"]},
@@ -39,8 +39,8 @@
   "travel": {
     "stays": [
       {
-        "id": "cp-palace-stay",
-        "name": "CP Palace and Resort",
+        "id": "cp-banquet-stay",
+        "name": "CP Banquet",
         "audience": "guests",
         "note": "Rooms attached to the wedding venue",
         "maps_url": null,
@@ -50,7 +50,7 @@
         "id": "rb-tower",
         "name": "Hotel R B Tower",
         "audience": "guests",
-        "note": "Directly opposite CP Palace and Resort",
+        "note": "Directly opposite CP Banquet",
         "maps_url": "https://maps.app.goo.gl/XYeJygsmNaURs6M2A",
         "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
       },
@@ -118,22 +118,17 @@
   },
   "open_questions": [
     {
-      "question": "Which guest groups may receive each WhatsApp-only notification, and who will approve the final copy?",
-      "owner": "Family",
-      "needed_by": "Before WhatsApp messages are prepared"
-    },
-    {
-      "question": "What are the locations within the venue for Lagun, dinners, Sangeet/DJ, Barat Aagman, Bhatai Milap, and Stage Program?",
-      "owner": "Venue coordinator / family",
-      "needed_by": "Before signage and final website copy"
-    },
-    {
       "question": "What are the vehicle timings and pick-up points between the venue, Mandir, railway station and Hotel Upkar Palace?",
       "owner": "Family / transport coordinator",
       "needed_by": "Before 20 November"
     },
     {
-      "question": "What is the dress code for Barat Aagman, Bhatai Milap and the Stage Program, if any?",
+      "question": "Where within the venue are the Lunch (20 Nov) and the Phere (21 Nov)?",
+      "owner": "Venue coordinator / family",
+      "needed_by": "Before signage and final website copy"
+    },
+    {
+      "question": "What is the dress code for Barat Aagman, Bhatai Milap, Reception and Phere, if any?",
       "owner": "Family",
       "needed_by": "Before the website is published"
     }
