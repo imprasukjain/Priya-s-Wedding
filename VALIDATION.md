@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 56 acceptance checks
+npm run check      # unit tests + build + 66 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -22,12 +22,13 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 
 | Check | Result | How |
 | --- | --- | --- |
-| Exactly 5 public entries on 20 Nov and 5 on 21 Nov | Pass | `verify` counts rendered items per day (expected counts come from `event-data.json`); `.ics` has exactly 10 events |
+| Public entries per day: 1 (19 Nov), 5 (20 Nov), 5 (21 Nov), 1 (22 Nov) | Pass | `verify` counts rendered items per day (expected counts come from `event-data.json`); `.ics` has exactly 12 events |
+| Mehendi at a separate venue | Pass | Card shows "Separate venue" and "7:00 PM onwards"; the FAQ and the calendar entry name Shree Gyan Seva Sadan, Morena |
 | WhatsApp-only material absent everywhere | Pass | `notification_material` is empty since the family made Lunch and Phere public on 10 Oct 2026. Any item added there later is scanned for by id, title, time and calendar stamp |
 | 21 Nov dinner shows 10:00 PM sharp end | Pass | Renders "4:00 PM onwards · ends 10:00 PM sharp" |
 | Every function shows its time and venue area | Pass | One check per schedule item. Lunch and Phere areas are still marked "to be confirmed" |
-| RSVP ETA and mode of travel | Pass | Arrival day and approximate time, plus a required mode of travel (train, bus, car / taxi, other) with optional train or bus details |
-| Tea/coffee note on both days | Pass | Shown in each day's panel, not as a timed event |
+| RSVP: one per family, days ticked, ETA and mode of travel | Pass | Asks for one RSVP per family; a tick-box for each day (at least one required); arrival day and approximate time, plus a required mode of travel (train, bus, car / taxi, other) with optional train or bus details |
+| Tea/coffee note on 20 and 21 Nov | Pass | Shown in those days' panels only, not as a timed event |
 | Every schedule item shows a timing status | Pass | 8 "Confirmed" pills |
 | Venue address and map | Pass | "In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001" and the approved Google Maps link |
 | On-day contacts | Pass | Every number in `contacts` is a tap-to-call link, and there are no others |

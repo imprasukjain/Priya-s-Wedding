@@ -128,7 +128,7 @@
         '',
         'Name: ' + f.name.value.trim(),
         'Guests (including me): ' + f.guests.value,
-        'Attending: ' + f.days.value,
+        'Attending: ' + checkedDays().join(', '),
         'Hotel room needed: ' + f.room.value + (f.room.value === 'Yes' ? ' (' + f.rooms.value + (f.rooms.value === '1' ? ' room)' : ' rooms)') : '')
       ];
       lines.push('ETA: ' + f.eta_day.value + (f.eta_time.value ? ', ' + formatClock(f.eta_time.value) : ''));
@@ -136,6 +136,16 @@
       if (f.note.value.trim()) lines.push('Note: ' + f.note.value.trim());
       send.href = form.getAttribute('data-wa-url') + '?text=' + encodeURIComponent(lines.join('\n'));
     };
+    var dayBoxes = form.querySelectorAll('[data-days] input');
+    var checkedDays = function () {
+      return Array.prototype.filter.call(dayBoxes, function (b) { return b.checked; }).map(function (b) { return b.value; });
+    };
+    var syncDays = function () {
+      dayBoxes[0].setCustomValidity(checkedDays().length ? '' : 'Please tick at least one day.');
+    };
+    Array.prototype.forEach.call(dayBoxes, function (b) { b.addEventListener('change', syncDays); });
+    syncDays();
+
     form.addEventListener('input', compose);
     form.addEventListener('change', compose);
     form.addEventListener('click', function (e) { if (e.target.closest('[data-step]')) compose(); });

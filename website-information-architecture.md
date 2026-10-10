@@ -6,7 +6,7 @@ Use a single mobile-first wedding information site. Keep navigation short and pr
 
 | Area | Purpose | Required content | Status / rule |
 | --- | --- | --- | --- |
-| Welcome | Orient guests | Priya & Sagar; 20–21 November 2026; CP Banquet, Morena | Ready from supplied data |
+| Welcome | Orient guests | Priya & Sagar; 19–22 November 2026; CP Banquet, Morena | Ready from supplied data |
 | Schedule | Main guest utility | Day tabs/sections, times, public functions, dinner end time, tea/coffee note | Render only `schedule` + public `guest_services` |
 | Venue | Help guests arrive | Venue name; approved address, map, internal-location notes when received | Address/link pending — do not fabricate |
 | Updates | Day-of clarity | Dated, timestamped notices; latest notice visually prominent | Empty state until an approved update exists |

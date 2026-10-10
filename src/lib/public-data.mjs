@@ -32,6 +32,8 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       title: item.title,
       location: item.location ?? null,
       timing_status: item.timing_status,
+      offsite: item.offsite === true,
+      onwards: item.onwards === true,
       attire: attireFor(item.id),
     }));
 

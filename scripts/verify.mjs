@@ -64,8 +64,17 @@ for (const word of ['notification_material', 'open_questions']) {
 // 3. Required public content.
 check('21 Nov dinner shows the 10:00 PM sharp end time',
   panel('2026-11-21').includes('4:00 PM onwards · ends 10:00 PM sharp'));
-check('Tea/coffee note shown under both days',
-  eventData.event_dates.every((d) => panel(d).includes('Tea and coffee available throughout the day')));
+const serviceDays = eventData.event_dates.filter((d) =>
+  eventData.guest_services.some((s) => s.availability.endsWith(` ${Number(d.slice(8))} November`)));
+check(`Tea/coffee note shown on ${serviceDays.join(', ')} only`,
+  eventData.event_dates.every((d) => panel(d).includes('Tea and coffee available throughout the day') === serviceDays.includes(d)));
+for (const item of eventData.schedule.filter((i) => i.offsite)) {
+  const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+  check(`${item.title} is marked as a separate venue (card, FAQ, calendar)`,
+    card.includes('Separate venue') && panelOf('help').includes(`is at ${item.location}`) &&
+    ics.includes(`LOCATION:${item.location.replace(/,/g, '\\,')}\r\n`));
+}
+check('Mehendi shows "7:00 PM onwards"', panel('2026-11-19').includes('7:00 PM onwards'));
 check('Every schedule item shows a timing status',
   (html.match(/class="pill pill--(confirmed|provisional)"/g) || []).length === expectedEvents);
 check('Order within each day is chronological', ['2026-11-20', '2026-11-21'].every((d) => {
@@ -93,6 +102,9 @@ check('RSVP form and no-JS fallback point to the approved WhatsApp number',
 check('RSVP asks for ETA and mode of travel',
   panelOf('rsvp').includes('name="eta_day"') && panelOf('rsvp').includes('name="eta_time"') &&
   panelOf('rsvp').includes('name="travel"') && /name="travel" value="[^"]+" required/.test(panelOf('rsvp')));
+check('RSVP asks for one RSVP per family', panelOf('rsvp').includes('One RSVP per family'));
+check('RSVP lets guests tick each day they will attend',
+  eventData.event_dates.every((d) => new RegExp(`type="checkbox" name="days" value="[^"]*${Number(d.slice(8))} Nov"`).test(panelOf('rsvp'))));
 check('RSVP deadline shown', panelOf('rsvp').includes('Please RSVP by Sunday, 15 November'));
 check('Aadhaar requirement shown in RSVP and Travel',
   panelOf('rsvp').includes(travel.check_in_note) && panelOf('travel').includes(travel.check_in_note));
