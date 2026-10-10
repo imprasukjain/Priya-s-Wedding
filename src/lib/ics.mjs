@@ -19,7 +19,7 @@ export function renderIcs(pub, generatedAt) {
       if (item.end_time) lines.push(`DTEND:${icsUtcStamp(item.date, item.end_time)}`);
       lines.push(
         `SUMMARY:${escapeText(`${item.title} · ${couple}`)}`,
-        `LOCATION:${escapeText(item.location ? `${item.location}, ${venue}` : venue)}`,
+        `LOCATION:${escapeText(item.offsite ? item.location : item.location ? `${item.location}, ${venue}` : venue)}`,
         `STATUS:${item.timing_status === 'confirmed' ? 'CONFIRMED' : 'TENTATIVE'}`,
         'END:VEVENT',
       );

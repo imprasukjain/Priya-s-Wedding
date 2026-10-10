@@ -64,7 +64,7 @@ function renderItem(item) {
   const { clock, meridiem } = splitTime(item.start_time);
   const timing = item.end_time
     ? `${formatTime(item.start_time)} onwards · ends ${formatTime(item.end_time)} sharp`
-    : formatTime(item.start_time);
+    : item.onwards ? `${formatTime(item.start_time)} onwards` : formatTime(item.start_time);
   const location = item.location
     ? `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}</span></p>`
     : `<p class="event__meta event__meta--pending">${icon('pin')}<span>Area at venue to be confirmed</span></p>`;
@@ -81,7 +81,8 @@ function renderItem(item) {
               <h4 class="event__title">${esc(item.title)}</h4>
               ${statusPill(item.timing_status)}
             </div>
-            <p class="event__timing${item.end_time ? ' event__timing--strong' : ' visually-hidden'}">${esc(timing)}</p>
+            ${item.offsite ? '<p class="event__offsite">Separate venue</p>' : ''}
+            <p class="event__timing${item.end_time ? ' event__timing--strong' : item.onwards ? '' : ' visually-hidden'}">${esc(timing)}</p>
             ${location}
             ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(item.attire)}</span></p>` : ''}
             <span class="event__next" hidden>Up next</span>
@@ -129,7 +130,7 @@ function renderSchedule(pub) {
     <div class="container">
       <header class="section__header">
         <p class="eyebrow">Schedule</p>
-        <h2 class="section__title" id="schedule-title">Two days of celebration</h2>
+        <h2 class="section__title" id="schedule-title">${esc(daysInWords(pub.days.length))} of celebration</h2>
         <p class="section__lede">All times are local (IST). Every time shown has been confirmed by the family unless it is marked <em>Provisional</em>.</p>
       </header>
       <div class="tabs" role="tablist" aria-label="Choose a day" hidden>${tabs}
@@ -270,13 +271,14 @@ function rsvpForm(pub) {
   const { rsvp } = pub;
   const couple = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
   const days = pub.event_dates;
-  const dayOptions = [
-    ...(days.length > 1 ? [['All days', 'All days']] : []),
-    ...days.map((d) => [`${dayMonth(d)} only`, `${shortDay(d).weekday}, ${shortDay(d).label} only`]),
-  ];
+  const checkbox = (name, value, label) => `
+              <label class="choice">
+                <input type="checkbox" name="${name}" value="${esc(value)}" checked>
+                <span>${esc(label)}</span>
+              </label>`;
   const arrivalDays = [
     [`Before ${dayMonth(days[0])}`, `Before ${shortDay(days[0]).label}`],
-    ...days.map((d) => [`${shortDay(d).weekday}, ${dayMonth(d)}`, `${shortDay(d).weekday}, ${shortDay(d).label}`]),
+    ...days.slice(0, -1).map((d) => [`${shortDay(d).weekday}, ${dayMonth(d)}`, `${shortDay(d).weekday}, ${shortDay(d).label}`]),
   ];
   const travelModes = ['Train', 'Bus', 'Car / taxi', 'Other'];
   const radio = (name, value, label, checked, required = false) => `
@@ -302,8 +304,8 @@ function rsvpForm(pub) {
           </div>
         </div>
         <fieldset class="field">
-          <legend class="field__label">Attending</legend>
-          <div class="choices">${dayOptions.map(([value, label], i) => radio('days', value, label, i === 0)).join('')}
+          <legend class="field__label">Days you’ll attend <span class="field__hint">untick any you’ll miss</span></legend>
+          <div class="choices" data-days>${days.map((d) => checkbox('days', `${shortDay(d).weekday} ${shortDay(d).label}`, `${shortDay(d).weekday}, ${shortDay(d).label}`)).join('')}
           </div>
         </fieldset>
         <fieldset class="field">
@@ -446,11 +448,18 @@ function renderUpdates(pub) {
   </section>`;
 }
 
+const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'];
+const daysInWords = (n) => `${NUMBER_WORDS[n] ?? n} day${n === 1 ? '' : 's'}`;
+
+const offsiteNote = (pub) => pub.days
+  .flatMap((d) => d.items.filter((i) => i.offsite).map((i) => ` The ${i.title} (${shortDay(i.date).label}) is at ${i.location}.`))
+  .join('');
+
 const formatPhone = (p) => `${p.slice(0, 5)} ${p.slice(5)}`;
 
 function renderHelp(pub) {
   const faqs = [
-    ['When and where is the wedding?', `${dateRange(pub.event_dates)} at ${pub.venue.name}, ${pub.venue.address ?? [pub.venue.landmark, pub.venue.locality].filter(Boolean).join(', ')}.`],
+    ['When and where is the wedding?', `${dateRange(pub.event_dates)} at ${pub.venue.name}, ${pub.venue.address ?? [pub.venue.landmark, pub.venue.locality].filter(Boolean).join(', ')}.${offsiteNote(pub)}`],
     ['How do I get from the station to the venue?', pub.travel.transport.note || 'Transport details will be shared soon.'],
     ...(pub.rsvp.deadline ? [['When should I RSVP?', `By ${longDay(pub.rsvp.deadline)}, using the RSVP section above. It helps the family book and allot hotel rooms.`]] : []),
     ...(pub.travel.check_in_note ? [['Do I need ID for the hotel?', pub.travel.check_in_note]] : []),

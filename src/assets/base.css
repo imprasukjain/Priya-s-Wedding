@@ -176,19 +176,24 @@ main > section.section:nth-of-type(odd) { background: var(--surface-tint); }
 .btn--ghost { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
 .btn--ghost:hover { border-color: var(--ink); }
 
-/* Schedule tabs */
+/* Schedule tabs: weekday stacked over date on phones, side by side when there is room. */
 .tabs {
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: .25rem;
   padding: .3rem; margin-bottom: 1.75rem;
-  background: var(--surface-tint); border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-tint); border: 1px solid var(--line); border-radius: var(--radius);
 }
 .tab {
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-  min-height: 48px; padding: 0 1rem; border: 0; border-radius: 999px; background: transparent; cursor: pointer;
-  color: var(--muted); transition: background-color .2s, color .2s, box-shadow .2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem;
+  min-height: 56px; padding: .35rem .25rem; border: 0; border-radius: calc(var(--radius) - 4px); background: transparent; cursor: pointer;
+  color: var(--muted); line-height: 1.2; transition: background-color .2s, color .2s, box-shadow .2s;
 }
-.tab__weekday { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.tab__date { font-weight: 600; font-size: 1rem; }
+.tab__weekday { font-size: .6875rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.tab__date { font-weight: 600; font-size: .9375rem; white-space: nowrap; }
+@media (min-width: 40rem) {
+  .tabs { border-radius: 999px; }
+  .tab { flex-direction: row; align-items: baseline; gap: .5rem; min-height: 48px; padding: 0 1rem; border-radius: 999px; }
+  .tab__date { font-size: 1rem; }
+}
 .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .tab[aria-selected="true"] .tab__weekday { color: var(--accent); }
 
@@ -350,6 +355,11 @@ textarea.input { resize: vertical; min-height: 72px; }
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border-radius: 999px;
   border: 1px solid var(--line-strong); background: var(--bg); font-size: .9375rem; font-weight: 500;
   transition: background-color .2s, border-color .2s, color .2s;
+}
+.event__offsite {
+  display: inline-block; margin-top: .35rem; padding: .1rem .55rem; border-radius: 999px;
+  background: var(--provisional-soft); color: var(--provisional);
+  font-size: .6875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
 }
 .choice input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }

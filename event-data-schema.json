@@ -408,6 +408,14 @@
               "whatsapp"
             ]
           }
+        },
+        "offsite": {
+          "type": "boolean",
+          "description": "true when the function is not at the main venue; location then names the other place"
+        },
+        "onwards": {
+          "type": "boolean",
+          "description": "true to show the start time as \"… onwards\""
         }
       },
       "additionalProperties": false

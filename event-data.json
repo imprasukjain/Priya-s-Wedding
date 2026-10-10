@@ -3,7 +3,7 @@
     "partner_one": "Priya",
     "partner_two": "Sagar"
   },
-  "event_dates": ["2026-11-20", "2026-11-21"],
+  "event_dates": ["2026-11-19", "2026-11-20", "2026-11-21", "2026-11-22"],
   "venue": {
     "name": "CP Banquet",
     "locality": "Morena",
@@ -14,6 +14,7 @@
     "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
   },
   "schedule": [
+    {"id":"mehendi","date":"2026-11-19","start_time":"19:00","end_time":null,"title":"Mehendi","location":"Shree Gyan Seva Sadan, Morena","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"],"offsite":true,"onwards":true},
     {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"lunch-20-nov","date":"2026-11-20","start_time":"11:00","end_time":null,"title":"Lunch","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"haldi","date":"2026-11-20","start_time":"13:30","end_time":null,"title":"Haldi","location":"Near the swimming pool at CP Banquet","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
@@ -23,7 +24,8 @@
     {"id":"dinner-21-nov","date":"2026-11-21","start_time":"16:00","end_time":"22:00","title":"Dinner Starts","location":"Garden Area","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"bhatai-milap","date":"2026-11-21","start_time":"19:00","end_time":null,"title":"Bhatai Milap","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"reception","date":"2026-11-21","start_time":"21:00","end_time":null,"title":"Reception","location":"Main Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"phere","date":"2026-11-21","start_time":"23:00","end_time":null,"title":"Phere","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]}
+    {"id":"phere","date":"2026-11-21","start_time":"23:00","end_time":null,"title":"Phere","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
+    {"id":"vidayi","date":"2026-11-22","start_time":"07:00","end_time":null,"title":"Vidayi","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]}
   ],
   "notification_material": [],
   "guest_services": [
@@ -80,14 +82,21 @@
     "url": null,
     "whatsapp_number": "8819855540",
     "deadline": "2026-11-15",
-    "note": "Your RSVP helps us book and allot hotel rooms for you."
+    "note": "One RSVP per family, please — include everyone coming with you. Your RSVP helps us book and allot hotel rooms."
   },
   "dress_code": {
     "status": "confirmed",
     "items": [
       {
+        "label": "Mehendi",
+        "guidance": "Sage green kurta / sage green ethnic wear",
+        "applies_to": [
+          "mehendi"
+        ]
+      },
+      {
         "label": "Lagun",
-        "guidance": "Suits / formals",
+        "guidance": "Men: suits / formals / Indo-western · Women: Indo-western / saree",
         "applies_to": [
           "lagun"
         ]
@@ -123,12 +132,17 @@
       "needed_by": "Before 20 November"
     },
     {
-      "question": "Where within the venue are the Lunch (20 Nov) and the Phere (21 Nov)?",
+      "question": "Where within the venue are the Lunch (20 Nov), the Phere (21 Nov) and the Vidayi (22 Nov)?",
       "owner": "Venue coordinator / family",
       "needed_by": "Before signage and final website copy"
     },
     {
-      "question": "What is the dress code for Barat Aagman, Bhatai Milap, Reception and Phere, if any?",
+      "question": "What is the approved map link for Shree Gyan Seva Sadan (Mehendi, 19 Nov)?",
+      "owner": "Family",
+      "needed_by": "Before 19 November"
+    },
+    {
+      "question": "What is the dress code for Barat Aagman, Bhatai Milap, Reception, Phere and Vidayi, if any?",
       "owner": "Family",
       "needed_by": "Before the website is published"
     }

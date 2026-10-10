@@ -1,6 +1,6 @@
 # Priya & Sagar — Wedding Guest Experience
 
-Planning pack and website prototype for the wedding at **CP Banquet, Morena** (in front of Hotel R B Tower), on **20–21 November 2026**.
+Planning pack and website prototype for the wedding at **CP Banquet, Morena** (in front of Hotel R B Tower), on **19–22 November 2026**.
 
 ## Website prototype (Milestone 01)
 
@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 56 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 66 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.

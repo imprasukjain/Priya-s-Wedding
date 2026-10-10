@@ -31,10 +31,12 @@ test('filter is a hard filter even if a private item slips into schedule', () =>
   assert.ok(!titles.includes('Hidden B'));
 });
 
-test('schedule is grouped by day, 5 + 5, sorted by start time with stable ties', () => {
+test('schedule is grouped by day (1 + 5 + 5 + 1), sorted by start time with stable ties', () => {
   const { days } = toPublicData(eventData);
-  assert.deepEqual(days.map((d) => [d.date, d.items.length]), [['2026-11-20', 5], ['2026-11-21', 5]]);
-  assert.deepEqual(days[1].items.map((i) => i.id), ['barat-aagman', 'dinner-21-nov', 'bhatai-milap', 'reception', 'phere']);
+  assert.deepEqual(days.map((d) => [d.date, d.items.length]),
+    [['2026-11-19', 1], ['2026-11-20', 5], ['2026-11-21', 5], ['2026-11-22', 1]]);
+  assert.deepEqual(days[2].items.map((i) => i.id), ['barat-aagman', 'dinner-21-nov', 'bhatai-milap', 'reception', 'phere']);
+  assert.equal(days[0].items[0].offsite, true);
 });
 
 test('unknown fields are not copied into public output', () => {
@@ -64,6 +66,8 @@ test('new public sections are copied by allow-list only', () => {
   assert.equal(pub.contacts.length, eventData.contacts.length);
   assert.deepEqual(pub.travel.stays.map((s) => s.audience), eventData.travel.stays.map((s) => s.audience));
   assert.equal(pub.rsvp.whatsapp_number, eventData.rsvp.whatsapp_number);
-  assert.equal(pub.days[0].items.find((i) => i.id === 'haldi').attire, 'Ethnic Indian wear / pastel kurta');
-  assert.equal(pub.days[1].items.find((i) => i.id === 'barat-aagman').attire, null);
+  const byId = (id) => pub.days.flatMap((d) => d.items).find((i) => i.id === id);
+  assert.equal(byId('haldi').attire, 'Ethnic Indian wear / pastel kurta');
+  assert.equal(byId('mehendi').attire, 'Sage green kurta / sage green ethnic wear');
+  assert.equal(byId('barat-aagman').attire, null);
 });
