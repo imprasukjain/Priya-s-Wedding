@@ -211,7 +211,7 @@ main > section.section:nth-of-type(odd) { background: var(--surface-tint); }
 /* Timeline */
 .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
 .event {
-  display: grid; grid-template-columns: 3.6rem 1.25rem 1fr; gap: 0 .4rem; position: relative;
+  display: grid; grid-template-columns: 3.9rem 1.1rem 1fr; gap: 0 .35rem; position: relative;
 }
 @media (min-width: 40rem) { .event { grid-template-columns: 5.5rem 1.5rem 1fr; gap: 0 .75rem; } }
 .event__time { padding-top: 1.05rem; text-align: right; line-height: 1.1; }
@@ -353,6 +353,9 @@ textarea.input { resize: vertical; min-height: 72px; }
 }
 .choice input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eta-time { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; margin-top: .25rem; }
+.eta-time .input { width: auto; min-width: 9rem; }
+.choices + .input { margin-top: .25rem; }
 .btn--block { width: 100%; min-height: 52px; font-weight: 600; }
 .rsvp__fine { margin-top: -.5rem; color: var(--muted); font-size: .8125rem; text-align: center; }
 

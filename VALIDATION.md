@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 59 acceptance checks
+npm run check      # unit tests + build + 56 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -22,16 +22,16 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 
 | Check | Result | How |
 | --- | --- | --- |
-| Exactly 4 public entries on 20 Nov and 4 on 21 Nov | Pass | `verify` counts rendered items per day panel; `.ics` has exactly 8 events |
-| 20 Nov 11:00 AM lunch absent everywhere | Pass | Output scan (id, title, `11:00`, `11:00 AM`, ICS stamp, "lunch") |
-| 21 Nov 11:30 PM Phere/rituals absent everywhere | Pass | Output scan (id, title, `23:30`, `11:30 PM`, ICS stamp, "phere", "ritual") |
+| Exactly 5 public entries on 20 Nov and 5 on 21 Nov | Pass | `verify` counts rendered items per day (expected counts come from `event-data.json`); `.ics` has exactly 10 events |
+| WhatsApp-only material absent everywhere | Pass | `notification_material` is empty since the family made Lunch and Phere public on 10 Oct 2026. Any item added there later is scanned for by id, title, time and calendar stamp |
 | 21 Nov dinner shows 10:00 PM sharp end | Pass | Renders "4:00 PM onwards · ends 10:00 PM sharp" |
-| Haldi location "Near the swimming pool at CP Palace" | Pass | Shown on the Haldi card and in the Venue section |
-| Tea/coffee note under 20 November | Pass | Shown in the 20 Nov panel only, not as a timed event |
+| Every function shows its time and venue area | Pass | One check per schedule item. Lunch and Phere areas are still marked "to be confirmed" |
+| RSVP ETA and mode of travel | Pass | Arrival day and approximate time, plus a required mode of travel (train, bus, car / taxi, other) with optional train or bus details |
+| Tea/coffee note on both days | Pass | Shown in each day's panel, not as a timed event |
 | Every schedule item shows a timing status | Pass | 8 "Confirmed" pills |
 | Venue address and map | Pass | "In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001" and the approved Google Maps link |
 | On-day contacts | Pass | Every number in `contacts` is a tap-to-call link, and there are no others |
-| Travel & stay | Pass | CP Palace and Resort, Hotel R B Tower (guests) and Hotel Upkar Palace (Barat) are listed. Vehicle destinations are listed with timings pending |
+| Travel & stay | Pass | CP Banquet, Hotel R B Tower (guests) and Hotel Upkar Palace (Barat) are listed. Vehicle destinations are listed with timings pending |
 | RSVP | Pass | The deadline (Sunday, 15 November) is shown. The form opens WhatsApp addressed only to the approved RSVP number, and a plain WhatsApp link is shown when JavaScript is off. The site has no form action, network call or storage, so it collects nothing |
 | Aadhaar requirement | Pass | Shown in both the RSVP and Travel & stay sections |
 | Dress code | Pass | Lagun, Haldi, Sangeet and Dinner guidance is shown in the Dress code section and on each matching schedule card |

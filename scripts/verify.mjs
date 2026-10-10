@@ -30,9 +30,18 @@ const lower = everything.toLowerCase();
 const panel = (date) => html.split(`id="day-${date}"`)[1]?.split('</section>')[0] ?? '';
 const panelOf = (id) => html.split(`id="${id}"`)[1]?.split('</section>')[0] ?? '';
 const count = (date) => (panel(date).match(/data-schedule-item=/g) || []).length;
-check('20 November shows exactly 4 public entries', count('2026-11-20') === 4, `found ${count('2026-11-20')}`);
-check('21 November shows exactly 4 public entries', count('2026-11-21') === 4, `found ${count('2026-11-21')}`);
-check('Calendar download has exactly 8 events', (ics.match(/BEGIN:VEVENT/g) || []).length === 8);
+for (const date of eventData.event_dates) {
+  const expected = eventData.schedule.filter((i) => i.date === date && i.display_on_website).length;
+  check(`${date} shows exactly ${expected} public entries`, count(date) === expected, `found ${count(date)}`);
+}
+const expectedEvents = eventData.schedule.filter((i) => i.display_on_website).length;
+check(`Calendar download has exactly ${expectedEvents} events`, (ics.match(/BEGIN:VEVENT/g) || []).length === expectedEvents);
+for (const item of eventData.schedule) {
+  const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+  check(`"${item.title}" (${item.date}) shows ${formatTime(item.start_time)}${item.location ? ` at ${item.location}` : ''}`,
+    html.includes(`data-schedule-item="${item.id}" data-start="${item.date}T${item.start_time}"`) &&
+      card.includes(item.title) && (!item.location || card.includes(item.location)));
+}
 
 // 2. No WhatsApp-only material anywhere in the output (HTML, CSS, JS, ICS).
 for (const item of eventData.notification_material) {
@@ -47,20 +56,18 @@ for (const item of eventData.notification_material) {
     check(`Private "${item.title}" absent: ${JSON.stringify(token)}`, !lower.includes(token.toLowerCase()));
   }
 }
-for (const word of ['phere', 'ritual', 'lunch', 'notification_material', 'open_questions']) {
+// Any future WhatsApp-only item added to notification_material is scanned for above.
+for (const word of ['notification_material', 'open_questions']) {
   check(`No "${word}" anywhere in the output`, !lower.includes(word));
 }
 
 // 3. Required public content.
 check('21 Nov dinner shows the 10:00 PM sharp end time',
   panel('2026-11-21').includes('4:00 PM onwards · ends 10:00 PM sharp'));
-check('Haldi location reads "Near the swimming pool at CP Palace"',
-  panel('2026-11-20').includes('Near the swimming pool at CP Palace'));
-check('Tea/coffee note shown under 20 November',
-  panel('2026-11-20').includes('Tea and coffee available throughout the day') &&
-  !panel('2026-11-21').includes('Tea and coffee'));
+check('Tea/coffee note shown under both days',
+  eventData.event_dates.every((d) => panel(d).includes('Tea and coffee available throughout the day')));
 check('Every schedule item shows a timing status',
-  (html.match(/class="pill pill--(confirmed|provisional)"/g) || []).length === 8);
+  (html.match(/class="pill pill--(confirmed|provisional)"/g) || []).length === expectedEvents);
 check('Order within each day is chronological', ['2026-11-20', '2026-11-21'].every((d) => {
   const starts = [...panel(d).matchAll(/data-start="[^"]*T(\d\d:\d\d)"/g)].map((m) => m[1]);
   return starts.every((t, i) => i === 0 || starts[i - 1] <= t);
@@ -83,6 +90,9 @@ check('RSVP send control is a real link to the approved number',
 check('RSVP form and no-JS fallback point to the approved WhatsApp number',
   panelOf('rsvp').includes(`data-wa-url="https://wa.me/91${rsvp.whatsapp_number}"`) &&
   panelOf('rsvp').includes(`href="https://wa.me/91${rsvp.whatsapp_number}?text=`));
+check('RSVP asks for ETA and mode of travel',
+  panelOf('rsvp').includes('name="eta_day"') && panelOf('rsvp').includes('name="eta_time"') &&
+  panelOf('rsvp').includes('name="travel"') && /name="travel" value="[^"]+" required/.test(panelOf('rsvp')));
 check('RSVP deadline shown', panelOf('rsvp').includes('Please RSVP by Sunday, 15 November'));
 check('Aadhaar requirement shown in RSVP and Travel',
   panelOf('rsvp').includes(travel.check_in_note) && panelOf('travel').includes(travel.check_in_note));

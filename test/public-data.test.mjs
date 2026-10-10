@@ -6,11 +6,15 @@ import { toPublicData } from '../src/lib/public-data.mjs';
 const eventData = JSON.parse(await readFile(new URL('../event-data.json', import.meta.url), 'utf8'));
 
 test('public data never contains notification material or open questions', () => {
-  const pub = toPublicData(eventData);
+  const sample = structuredClone(eventData);
+  sample.notification_material = [
+    { id: 'private-sample', date: '2026-11-20', time: '06:15', title: 'Private sample reminder', timing_status: 'confirmed', channels: ['whatsapp'], display_on_website: false },
+  ];
+  const pub = toPublicData(sample);
   const json = JSON.stringify(pub).toLowerCase();
   assert.equal('notification_material' in pub, false);
   assert.equal('open_questions' in pub, false);
-  for (const item of eventData.notification_material) {
+  for (const item of sample.notification_material) {
     assert.equal(json.includes(item.id), false);
     assert.equal(json.includes(item.title.toLowerCase()), false);
   }
@@ -27,10 +31,10 @@ test('filter is a hard filter even if a private item slips into schedule', () =>
   assert.ok(!titles.includes('Hidden B'));
 });
 
-test('schedule is grouped by day, 4 + 4, sorted by start time with stable ties', () => {
+test('schedule is grouped by day, 5 + 5, sorted by start time with stable ties', () => {
   const { days } = toPublicData(eventData);
-  assert.deepEqual(days.map((d) => [d.date, d.items.length]), [['2026-11-20', 4], ['2026-11-21', 4]]);
-  assert.deepEqual(days[1].items.map((i) => i.id), ['barat-aagman', 'dinner-21-nov', 'bhatai-milap', 'stage-program']);
+  assert.deepEqual(days.map((d) => [d.date, d.items.length]), [['2026-11-20', 5], ['2026-11-21', 5]]);
+  assert.deepEqual(days[1].items.map((i) => i.id), ['barat-aagman', 'dinner-21-nov', 'bhatai-milap', 'reception', 'phere']);
 });
 
 test('unknown fields are not copied into public output', () => {

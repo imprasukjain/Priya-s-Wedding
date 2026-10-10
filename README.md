@@ -1,6 +1,6 @@
 # Priya & Sagar — Wedding Guest Experience
 
-Planning pack and website prototype for the wedding at **CP Palace and Resort, Morena**, on **20–21 November 2026**.
+Planning pack and website prototype for the wedding at **CP Banquet, Morena** (in front of Hotel R B Tower), on **20–21 November 2026**.
 
 ## Website prototype (Milestone 01)
 
@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 59 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 56 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
@@ -50,7 +50,7 @@ One-time setup (repository owner): **Settings → Pages → Build and deployment
 
 ## Publishing rule
 
-The website is the public source of truth for guest-facing schedules and updates. WhatsApp is used for updates and selected private notifications. The 20 November Lagun Guest lunch and the 21 November Phere/other rituals are recorded as **WhatsApp-only** material and must never be rendered in the public schedule.
+The website is the public source of truth for guest-facing schedules and updates. WhatsApp is used for updates and selected private notifications. Anything that must stay off the website goes in `notification_material` in `event-data.json`; the build never reads it, and the checks fail the deploy if any of it appears in the output. On 10 October 2026 the family moved the Lunch (20 Nov, 11:00 AM) and the Phere (21 Nov, 11:00 PM) into the public schedule, so `notification_material` is currently empty.
 
 ## Content status
 

@@ -95,6 +95,12 @@
     });
   });
 
+  // "18:45" -> "6:45 PM"
+  function formatClock(hhmm) {
+    var p = hhmm.split(':'), h = parseInt(p[0], 10);
+    return (h % 12 || 12) + ':' + p[1] + (h >= 12 ? ' PM' : ' AM');
+  }
+
   // ── RSVP: compose a WhatsApp message; nothing is stored or sent by the site ──
   var form = document.querySelector('[data-rsvp-form]');
   if (form) {
@@ -125,7 +131,8 @@
         'Attending: ' + f.days.value,
         'Hotel room needed: ' + f.room.value + (f.room.value === 'Yes' ? ' (' + f.rooms.value + (f.rooms.value === '1' ? ' room)' : ' rooms)') : '')
       ];
-      if (f.arrival.value.trim()) lines.push('Arrival: ' + f.arrival.value.trim());
+      lines.push('ETA: ' + f.eta_day.value + (f.eta_time.value ? ', ' + formatClock(f.eta_time.value) : ''));
+      if (f.travel.value) lines.push('Mode of travel: ' + f.travel.value + (f.travel_details.value.trim() ? ' (' + f.travel_details.value.trim() + ')' : ''));
       if (f.note.value.trim()) lines.push('Note: ' + f.note.value.trim());
       send.href = form.getAttribute('data-wa-url') + '?text=' + encodeURIComponent(lines.join('\n'));
     };
