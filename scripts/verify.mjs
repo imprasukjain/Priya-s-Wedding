@@ -91,8 +91,20 @@ const expectedPhones = contacts.flatMap((c) => c.phones).sort();
 check('Every on-day contact number is a tap-to-call link, and no others',
   JSON.stringify(telLinks) === JSON.stringify(expectedPhones), `${telLinks.length} links`);
 for (const stay of travel.stays) check(`Stay "${stay.name}" listed`, panelOf('travel').includes(stay.name));
-check('Transport destinations listed with timings pending',
-  travel.transport.destinations.every((d) => panelOf('travel').includes(d)) && panelOf('travel').includes('Timings soon'));
+check('Transport destinations listed', travel.transport.destinations.every((d) => panelOf('travel').includes(d)));
+for (const t of travel.transport.timings ?? []) {
+  check(`Vehicle timing "${t.label}" shown as ${formatTime(t.from)} – ${formatTime(t.to)}${t.tentative ? ' (tentative)' : ''}`,
+    panelOf('travel').includes(t.label) && panelOf('travel').includes(`${formatTime(t.from)} – ${formatTime(t.to)}`) &&
+    (!t.tentative || panelOf('travel').includes('(tentative)')));
+}
+for (const item of eventData.schedule.filter((i) => i.location_needed === false)) {
+  const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+  check(`${item.title} shows no location line`, !card.includes('Area at venue to be confirmed') && !card.includes('event__meta--pending'));
+}
+for (const item of eventData.schedule.filter((i) => i.maps_url)) {
+  const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+  check(`${item.title} card links to its approved map`, card.includes(`href="${item.maps_url}"`));
+}
 const { rsvp, dress_code: dressCode } = eventData;
 check('RSVP send control is a real link to the approved number',
   panelOf('rsvp').includes(`data-rsvp-send href="https://wa.me/91${rsvp.whatsapp_number}?text=`));
@@ -128,6 +140,7 @@ check('Page is kept out of search engines (noindex)', html.includes('content="no
 const rsvpChat = rsvp.whatsapp_number ? `https://wa.me/91${rsvp.whatsapp_number}` : null;
 const approvedUrls = new Set(
   [venue.maps_url, venue.maps_embed_url, eventData.rsvp?.url,
+    ...eventData.schedule.flatMap((i) => [i.maps_url, i.maps_embed_url]),
     ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url])]
     .filter(Boolean).map((u) => u.replace(/&/g, '&amp;')),
 );

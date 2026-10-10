@@ -34,6 +34,10 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       timing_status: item.timing_status,
       offsite: item.offsite === true,
       onwards: item.onwards === true,
+      location_needed: item.location_needed !== false,
+      maps_url: item.maps_url ?? null,
+      maps_embed_url: item.maps_embed_url ?? null,
+      maps_label: item.maps_label ?? null,
       attire: attireFor(item.id),
     }));
 
@@ -81,6 +85,9 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       transport: {
         status: eventData.travel?.transport?.status ?? 'pending',
         destinations: [...(eventData.travel?.transport?.destinations ?? [])],
+        timings: (eventData.travel?.transport?.timings ?? []).map((t) => ({
+          label: t.label, from: t.from, to: t.to, tentative: t.tentative,
+        })),
         note: eventData.travel?.transport?.note ?? null,
       },
     },

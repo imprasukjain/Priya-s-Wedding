@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 66 acceptance checks
+npm run check      # unit tests + build + 69 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -23,10 +23,12 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 | Check | Result | How |
 | --- | --- | --- |
 | Public entries per day: 1 (19 Nov), 5 (20 Nov), 5 (21 Nov), 1 (22 Nov) | Pass | `verify` counts rendered items per day (expected counts come from `event-data.json`); `.ics` has exactly 12 events |
-| Mehendi at a separate venue | Pass | Card shows "Separate venue" and "7:00 PM onwards"; the FAQ and the calendar entry name Shree Gyan Seva Sadan, Morena |
+| Mehendi at a separate venue | Pass | Card shows "Separate venue" and "7:00 PM onwards"; the FAQ and the calendar entry name Shree Gyan Seva Sadan, Morena; the card links to the approved map (pin on Shree Parshvanath Digambar Jain Panchayati Mandir) |
+| Vehicle timing | Pass | "To the temple (Mandir): 6:30 AM – 8:30 AM (tentative)" on the Travel card; other timings announced on WhatsApp |
+| Vidayi | Pass | No location line, as the family asked |
 | WhatsApp-only material absent everywhere | Pass | `notification_material` is empty since the family made Lunch and Phere public on 10 Oct 2026. Any item added there later is scanned for by id, title, time and calendar stamp |
 | 21 Nov dinner shows 10:00 PM sharp end | Pass | Renders "4:00 PM onwards · ends 10:00 PM sharp" |
-| Every function shows its time and venue area | Pass | One check per schedule item. Lunch and Phere areas are still marked "to be confirmed" |
+| Every function shows its time and venue area | Pass | One check per schedule item. Lunch is in the Garden Area and Phere in the Outer Hall |
 | RSVP: one per family, days ticked, ETA and mode of travel | Pass | Asks for one RSVP per family; a tick-box for each day (at least one required); arrival day and approximate time, plus a required mode of travel (train, bus, car / taxi, other) with optional train or bus details |
 | Tea/coffee note on 20 and 21 Nov | Pass | Shown in those days' panels only, not as a timed event |
 | Every schedule item shows a timing status | Pass | 8 "Confirmed" pills |
