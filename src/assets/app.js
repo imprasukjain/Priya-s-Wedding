@@ -90,7 +90,7 @@
         frame.appendChild(iframe);
       }
       frame.hidden = !frame.hidden;
-      btn.querySelector('span').textContent = frame.hidden ? 'Show map here' : 'Hide map';
+      btn.querySelector('span').textContent = frame.hidden ? btn.getAttribute('data-label') : 'Hide map';
       btn.setAttribute('aria-expanded', String(!frame.hidden));
     });
   });

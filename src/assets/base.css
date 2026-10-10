@@ -356,6 +356,14 @@ textarea.input { resize: vertical; min-height: 72px; }
   border: 1px solid var(--line-strong); background: var(--bg); font-size: .9375rem; font-weight: 500;
   transition: background-color .2s, border-color .2s, color .2s;
 }
+.event__maplabel { margin-top: .5rem; color: var(--muted); font-size: .8125rem; }
+.event__body .map { margin-top: .5rem; }
+.event__body .map .btn { min-height: 40px; padding: 0 .9rem; font-size: .875rem; }
+.timings { list-style: none; margin: .875rem 0 0; padding: .75rem .9rem; display: grid; gap: .35rem; border-radius: var(--radius-sm); background: var(--surface-tint); }
+.timings li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem 1rem; }
+.timings__label { font-weight: 600; }
+.timings__time { font-variant-numeric: tabular-nums; }
+.timings__time em { font-style: normal; color: var(--muted); }
 .event__offsite {
   display: inline-block; margin-top: .35rem; padding: .1rem .55rem; border-radius: 999px;
   background: var(--provisional-soft); color: var(--provisional);

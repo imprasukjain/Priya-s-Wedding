@@ -65,9 +65,12 @@ function renderItem(item) {
   const timing = item.end_time
     ? `${formatTime(item.start_time)} onwards · ends ${formatTime(item.end_time)} sharp`
     : item.onwards ? `${formatTime(item.start_time)} onwards` : formatTime(item.start_time);
-  const location = item.location
-    ? `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}</span></p>`
-    : `<p class="event__meta event__meta--pending">${icon('pin')}<span>Area at venue to be confirmed</span></p>`;
+  let location = '';
+  if (item.location) location = `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}</span></p>`;
+  else if (item.location_needed) location = `<p class="event__meta event__meta--pending">${icon('pin')}<span>Area at venue to be confirmed</span></p>`;
+  const map = item.maps_url || item.maps_embed_url
+    ? `${item.maps_label ? `<p class="event__maplabel">${esc(item.maps_label)}</p>` : ''}${mapBlock({ title: item.location ?? item.title, mapsUrl: item.maps_url, embedUrl: item.maps_embed_url, compact: true })}`
+    : '';
 
   return `
         <li class="event" data-schedule-item="${esc(item.id)}" data-start="${esc(`${item.date}T${item.start_time}`)}">
@@ -84,6 +87,7 @@ function renderItem(item) {
             ${item.offsite ? '<p class="event__offsite">Separate venue</p>' : ''}
             <p class="event__timing${item.end_time ? ' event__timing--strong' : item.onwards ? '' : ' visually-hidden'}">${esc(timing)}</p>
             ${location}
+            ${map}
             ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(item.attire)}</span></p>` : ''}
             <span class="event__next" hidden>Up next</span>
           </div>
@@ -146,15 +150,15 @@ function renderSchedule(pub) {
   </section>`;
 }
 
-function mapBlock({ title, mapsUrl, embedUrl: rawEmbedUrl }) {
+function mapBlock({ title, mapsUrl, embedUrl: rawEmbedUrl, compact = false }) {
   const embedUrl = features.mapEmbeds ? rawEmbedUrl : null;
   if (!mapsUrl && !embedUrl) return '';
   return `
           <div class="map">
             ${embedUrl ? `<div class="map__frame" data-map-frame hidden></div>` : ''}
             <div class="map__actions">
-              ${mapsUrl ? `<a class="btn btn--primary" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${icon('pin')}<span>Open in Google Maps</span></a>` : ''}
-              ${embedUrl ? `<button class="btn btn--ghost" type="button" data-map-src="${esc(embedUrl)}" data-map-title="${esc(`Map: ${title}`)}" hidden>${icon('map')}<span>Show map here</span></button>` : ''}
+              ${mapsUrl ? `<a class="btn btn--primary" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${icon('pin')}<span>${compact ? 'Open in Maps' : 'Open in Google Maps'}</span></a>` : ''}
+              ${embedUrl ? `<button class="btn btn--ghost" type="button" data-map-src="${esc(embedUrl)}" data-map-title="${esc(`Map: ${title}`)}" data-label="${compact ? 'Show map' : 'Show map here'}" hidden>${icon('map')}<span>${compact ? 'Show map' : 'Show map here'}</span></button>` : ''}
             </div>
           </div>`;
 }
@@ -162,7 +166,7 @@ function mapBlock({ title, mapsUrl, embedUrl: rawEmbedUrl }) {
 function renderVenue(pub) {
   const { venue } = pub;
   const knownAreas = pub.days.flatMap((d) => d.items).filter((i) => i.location);
-  const pendingAreas = pub.days.flatMap((d) => d.items).filter((i) => !i.location);
+  const pendingAreas = pub.days.flatMap((d) => d.items).filter((i) => !i.location && i.location_needed);
   const uniquePendingTitles = [...new Set(pendingAreas.map((i) => i.title))];
 
   let address;
@@ -240,12 +244,15 @@ function renderTravel(pub) {
         <h2 class="section__title" id="travel-title">Getting here &amp; staying over</h2>
       </header>
       <div class="card transport">
-        <div class="detail__label"><span>Getting around</span>${transport.status === 'pending' ? pending('Timings soon') : ''}</div>
+        <div class="detail__label"><span>Getting around</span>${transport.status === 'pending' ? pending('Timings soon') : transport.status === 'tentative' ? pending('Tentative') : ''}</div>
         <div class="transport__body">
           <span class="stay__icon">${icon('car')}</span>
           <div>
             ${transport.destinations.length ? `<p class="transport__lead">Vehicles from the venue to</p>
             <ul class="chips">${transport.destinations.map((d) => `<li class="chip">${esc(d)}</li>`).join('')}</ul>` : ''}
+            ${transport.timings.length ? `<ul class="timings">${transport.timings
+              .map((t) => `<li><span class="timings__label">${esc(t.label)}</span><span class="timings__time">${esc(formatTime(t.from))} – ${esc(formatTime(t.to))}${t.tentative ? ' <em>(tentative)</em>' : ''}</span></li>`)
+              .join('')}</ul>` : ''}
             ${transport.note ? `<p class="transport__note">${esc(transport.note)}</p>` : ''}
           </div>
         </div>
