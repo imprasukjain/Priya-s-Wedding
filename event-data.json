@@ -97,14 +97,14 @@
     "items": [
       {
         "label": "Mehendi",
-        "guidance": "Sage green kurta / sage green ethnic wear",
+        "guidance": "Indian wear",
         "applies_to": [
           "mehendi"
         ]
       },
       {
         "label": "Lagun",
-        "guidance": "Men: suits / formals / Indo-western · Women: Indo-western / saree",
+        "guidance": "Men: suit / formals · Women: chunri print saree",
         "applies_to": [
           "lagun"
         ]

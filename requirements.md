@@ -76,7 +76,7 @@ Supplied since milestone 1: the venue map link (pin on Hotel R B Tower, directly
 
 Also supplied: the full venue address (In front of Hotel R B Tower, Ambah Bypass Road, Morena, Madhya Pradesh 476001); RSVP by 15 November via a WhatsApp message to the family, to help book and allot hotel rooms; the Aadhaar card requirement for hotel check-in; and dress codes for Lagun, Haldi, Sangeet and dinners.
 
-Update 10 Oct 2026 (later): Mehendi added on 19 Nov at Shree Gyan Seva Sadan, Morena (dress code: sage green); Vidayi added on 22 Nov at 7:00 AM; Lagun dress code widened to suits / formals / Indo-western for men and Indo-western / saree for women; RSVP asks for one response per family.
+Update 10 Oct 2026 (later): Mehendi added on 19 Nov at Shree Gyan Seva Sadan, Morena (dress code: Indian wear); Vidayi added on 22 Nov at 7:00 AM; Lagun dress code: suit / formals for men, chunri print saree for women; RSVP asks for one response per family.
 
 Mehendi map link supplied (pin on Shree Parshvanath Digambar Jain Panchayati Mandir). Temple vehicles 6:30–8:30 AM (tentative); other vehicle timings will be announced on the WhatsApp group. Vidayi needs no location. No dress code for the remaining functions.
 
