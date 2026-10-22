@@ -80,6 +80,8 @@ Update 10 Oct 2026 (later): Mehendi added on 19 Nov at Shree Gyan Seva Sadan, Mo
 
 Mehendi map link supplied (pin on Shree Parshvanath Digambar Jain Panchayati Mandir). Temple vehicles 6:30–8:30 AM (tentative); other vehicle timings will be announced on the WhatsApp group. Vidayi needs no location. No dress code for the remaining functions.
 
+Update 22 Oct 2026 (later): the site is published in English, Hindi and Bangla. Translations should be reviewed by native readers in the family before wide sharing.
+
 Update 22 Oct 2026: Mehendi moved to the family home (Arihant Bhawan); Vidayi moved to 6:00 AM.
 
 Still unresolved: which day(s) the temple vehicles run, and a map link for Arihant Bhawan.

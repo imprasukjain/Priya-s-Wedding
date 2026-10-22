@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 68 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 86 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
@@ -28,6 +28,19 @@ The build also writes `dist/embedded/index.html`, a single-file copy used for th
 | `docs/screenshots/` | Screenshots for the pre-publish review. |
 
 The accent colour (`--accent` in `src/themes/minimal.css`) is a placeholder until the family chooses one.
+
+## Languages
+
+The site is published in English (`/`), Hindi (`/hi/`) and Bangla (`/bn/`), with a switcher at the top and bottom of every page. A guest's choice is remembered on their phone.
+
+Translations live in `content/i18n/`:
+
+- `ui` – every heading, button and form label. A Hindi or Bangla file missing a key fails the build.
+- `content` – translations of text from `event-data.json`, keyed by the English text (`"Outer Hall": "आउटर हॉल"`). **When you add or reword something in `event-data.json`, add its translation here too.** If you forget, the site shows the English text in its place and the build prints a `WARN` line listing what is untranslated. The update still goes live.
+- `keepAsWritten` – names left as written in every language (venue and hotel names, postal addresses), so they match signboards and maps.
+- `format` – month and weekday names, and the words for parts of the day (सुबह, शाम, সকাল, সন্ধ্যা…).
+
+RSVPs sent from any language reach WhatsApp in English, so every RSVP the family receives reads the same way.
 
 ## Live site
 

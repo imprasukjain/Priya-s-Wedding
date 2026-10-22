@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 68 acceptance checks
+npm run check      # unit tests + build + 86 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -43,6 +43,18 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 | Keyboard navigable | Pass | Tab order: skip link → monogram → nav → quick actions → day tab → day panel → calendar/print. Arrow keys, Home and End switch day tabs. All interactive targets are ≥ 44px tall |
 | Works without JavaScript | Pass | Both days are shown one after the other; tabs, share and print are progressive enhancements |
 | No domain, hosting, live link, WhatsApp API, paid tool or message send | Pass | The only external URLs in the output are the map links and the RSVP WhatsApp chat link approved in `event-data.json`. RSVP uses a WhatsApp click-to-chat link that the guest sends themselves, not the WhatsApp API. Google Maps is contacted only when a guest presses "Show map here" (no iframe in the page source). Sharing uses the device's own share sheet or copy-to-clipboard only, and only when a guest presses the button. The preview is marked `noindex` |
+
+## Languages
+
+| Check | Result | How |
+| --- | --- | --- |
+| Hindi and Bangla pages built | Pass | `hi/index.html` and `bn/index.html` with `lang="hi"` / `lang="bn"`; the switcher on every page links to the other two |
+| Same schedule in every language | Pass | Each page has the same function ids, dates and start times, in the same order, as the English page |
+| Function names and places translated | Pass | Every schedule card shows the translated title and place from `content/i18n/<lang>.json` |
+| Same contacts and RSVP number | Pass | Tap-to-call numbers and the WhatsApp RSVP number match the English page; RSVP form values stay in English |
+| Calendar per language | Pass | `hi/schedule.ics` and `bn/schedule.ics` have all 12 functions with translated titles |
+| WhatsApp-only material absent in every language | Pass | The output scan covers every file in `dist/`, including `hi/` and `bn/` |
+| Only the language choice is stored | Pass | `localStorage` is used for the key `lang` only; nothing is sent anywhere |
 
 ## Pre-publish review aids
 

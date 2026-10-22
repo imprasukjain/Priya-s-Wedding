@@ -5,6 +5,7 @@ import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadValidatedData } from '../src/lib/load-data.mjs';
 import { formatTime, icsUtcStamp } from '../src/lib/format.mjs';
+import { LANGUAGES } from '../src/lib/i18n.mjs';
 
 const dist = new URL('../dist/', import.meta.url);
 const results = [];
@@ -122,8 +123,10 @@ check('RSVP lets guests tick each day they will attend',
 check('RSVP deadline shown', panelOf('rsvp').includes('Please RSVP by Sunday, 15 November'));
 check('Aadhaar requirement shown in RSVP and Travel',
   panelOf('rsvp').includes(travel.check_in_note) && panelOf('travel').includes(travel.check_in_note));
-check('RSVP is not collected or stored by the site (no form action, no fetch)',
-  !/<form[^>]*\saction=/i.test(html) && !/fetch\(|XMLHttpRequest|localStorage|sendBeacon/.test(outputs['app.js']));
+const storageWrites = [...outputs['app.js'].matchAll(/localStorage\.setItem\(\s*'([^']+)'/g)].map((m) => m[1]);
+check('RSVP is not collected or stored by the site (no form action, no network calls; only the language choice is remembered)',
+  !/<form[^>]*\saction=/i.test(html) && !/fetch\(|XMLHttpRequest|sendBeacon/.test(outputs['app.js']) &&
+  storageWrites.every((key) => key === 'lang'));
 for (const item of dressCode.items) {
   check(`Dress code "${item.label}: ${item.guidance}" shown`, panelOf('dress-code').includes(item.guidance));
   for (const id of item.applies_to) {
@@ -154,6 +157,35 @@ check('No WhatsApp API use; click-to-chat only to the approved RSVP number',
   !/api\.whatsapp|graph\.facebook|whatsapp:\/\//i.test(everything) &&
   [...everything.matchAll(/wa\.me\/(\d+)/g)].every((m) => m[1] === `91${rsvp.whatsapp_number}`));
 check('Map embeds load only on request (no iframe in the page source)', !/<iframe/i.test(html));
+
+// 6. Hindi and Bangla pages: same schedule, same links, translated text.
+const scheduleSignature = (page) => [...page.matchAll(/data-schedule-item="([^"]+)" data-start="([^"]+)"/g)].map((m) => `${m[1]}@${m[2]}`).join(',');
+const formValues = (page) => [...page.matchAll(/name="(days|eta_day|travel|room)" value="([^"]+)"/g)].map((m) => `${m[1]}=${m[2]}`).join(',');
+for (const code of LANGUAGES) {
+  const file = code === 'en' ? 'index.html' : `${code}/index.html`;
+  const page = outputs[file] ?? '';
+  const others = LANGUAGES.filter((c) => c !== code);
+  const hrefTo = (c) => (code === 'en' ? (c === 'en' ? './' : `${c}/`) : c === 'en' ? '../' : `../${c}/`);
+  check(`[${code}] page built with lang="${code}"`, page.includes(`<html lang="${code}">`));
+  check(`[${code}] language switcher links to ${others.join(' and ')}`,
+    others.every((c) => page.includes(`href="${hrefTo(c)}" hreflang="${c}"`)));
+  if (code === 'en') continue;
+  const strings = JSON.parse((await readFile(new URL(`../content/i18n/${code}.json`, import.meta.url), 'utf8')));
+  const tc = (text) => strings.content[text] ?? text;
+  check(`[${code}] same functions, dates and times as the English page`, scheduleSignature(page) === scheduleSignature(html));
+  check(`[${code}] RSVP sends the same English values to the same WhatsApp number`,
+    formValues(page) === formValues(html) && page.includes(`data-wa-url="https://wa.me/91${rsvp.whatsapp_number}"`));
+  check(`[${code}] same tap-to-call numbers`,
+    JSON.stringify([...page.matchAll(/href="tel:\+91(\d{10})"/g)].map((m) => m[1]).sort()) === JSON.stringify(expectedPhones));
+  check(`[${code}] calendar download has ${expectedEvents} events`,
+    ((outputs[`${code}/schedule.ics`] ?? '').match(/BEGIN:VEVENT/g) || []).length === expectedEvents);
+  const untranslated = eventData.schedule.filter((item) => {
+    const card = page.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+    return !card.includes(tc(item.title)) || (item.location && !card.includes(tc(item.location)));
+  });
+  check(`[${code}] function names and places are shown translated`, untranslated.length === 0, untranslated.map((i) => i.id).join(', '));
+  check(`[${code}] stylesheet and script load from the site root`, page.includes('href="../styles.css"') && page.includes('src="../app.js"'));
+}
 
 const failed = results.filter((r) => !r.ok);
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.detail ? ` (${r.detail})` : ''}`);
