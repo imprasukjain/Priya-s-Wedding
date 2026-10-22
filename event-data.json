@@ -14,7 +14,7 @@
     "maps_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d892.575806516848!2d77.98663272839826!3d26.510370598642343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0015be6a0f%3A0x441cff1384b99968!2sHOTEL%20R%20B%20TOWER!5e0!3m2!1sen!2sin!4v1791585642883!5m2!1sen!2sin"
   },
   "schedule": [
-    {"id":"mehendi","date":"2026-11-19","start_time":"19:00","end_time":null,"title":"Mehendi","location":"Shree Gyan Seva Sadan, Morena","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"],"offsite":true,"onwards":true,"maps_url":"https://maps.app.goo.gl/DWfgzm9csrTYiEWZ6","maps_embed_url":"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57128.84477997002!2d77.93346553125001!3d26.502340099999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976ad0068e789bf%3A0xc1033b2f97ce24c3!2sShree%20Parshvanath%20Digambar%20Jain%20Panchayati%20Mandir!5e0!3m2!1sen!2sin!4v1791670992649!5m2!1sen!2sin","maps_label":"The map pin is on Shree Parshvanath Digambar Jain Panchayati Mandir."},
+    {"id":"mehendi","date":"2026-11-19","start_time":"19:00","end_time":null,"title":"Mehendi","location":"At Home","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"],"offsite":true,"onwards":true,"address":"Arihant Bhawan, Kuan Wali Gali, Purani Jeen, Morena (M.P)"},
     {"id":"lagun","date":"2026-11-20","start_time":"09:00","end_time":null,"title":"Lagun","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"lunch-20-nov","date":"2026-11-20","start_time":"11:00","end_time":null,"title":"Lunch","location":"Garden Area","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"haldi","date":"2026-11-20","start_time":"13:30","end_time":null,"title":"Haldi","location":"Near the swimming pool at CP Banquet","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
@@ -25,7 +25,7 @@
     {"id":"bhatai-milap","date":"2026-11-21","start_time":"19:00","end_time":null,"title":"Bhatai Milap","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"reception","date":"2026-11-21","start_time":"21:00","end_time":null,"title":"Reception","location":"Main Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
     {"id":"phere","date":"2026-11-21","start_time":"23:00","end_time":null,"title":"Phere","location":"Outer Hall","timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"]},
-    {"id":"vidayi","date":"2026-11-22","start_time":"07:00","end_time":null,"title":"Vidayi","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"],"location_needed":false}
+    {"id":"vidayi","date":"2026-11-22","start_time":"06:00","end_time":null,"title":"Vidayi","location":null,"timing_status":"confirmed","display_on_website":true,"channels":["website","whatsapp"],"location_needed":false}
   ],
   "notification_material": [],
   "guest_services": [
@@ -137,6 +137,11 @@
     {
       "question": "Which day(s) do the 6:30–8:30 AM temple vehicles run, and when will the other vehicle timings be confirmed?",
       "owner": "Family / transport coordinator",
+      "needed_by": "Before 19 November"
+    },
+    {
+      "question": "Is there a Google Maps link for Arihant Bhawan (Mehendi, 19 Nov)?",
+      "owner": "Family",
       "needed_by": "Before 19 November"
     }
   ]

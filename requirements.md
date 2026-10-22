@@ -63,10 +63,10 @@ Only website-eligible `schedule` entries may be rendered on the site. `notificat
 
 | Date | Public website content |
 | --- | --- |
-| 19 Nov | 7:00 PM onwards Mehendi at Shree Gyan Seva Sadan, Morena (separate venue). |
+| 19 Nov | 7:00 PM onwards Mehendi at home: Arihant Bhawan, Kuan Wali Gali, Purani Jeen, Morena (M.P) (separate venue). |
 | 20 Nov | 9:00 AM Lagun (Outer Hall); 11:00 AM Lunch (Garden Area); 1:30 PM Haldi near the swimming pool at CP Banquet; 5:30 PM Dinner Starts (Garden Area); 7:30 PM Sangeet and Fun DJ Night (Outer Hall); tea and coffee throughout the day. |
 | 21 Nov | 4:00 PM Barat Aagman (Main Gate of Banquet Hall); 4:00 PM Dinner Starts, ends sharply at 10:00 PM (Garden Area); 7:00 PM Bhatai Milap (Outer Hall); 9:00 PM Reception (Main Hall); 11:00 PM Phere (Outer Hall); tea and coffee throughout the day. |
-| 22 Nov | 7:00 AM Vidayi. |
+| 22 Nov | 6:00 AM Vidayi. |
 
 Update 10 Oct 2026: the venue is now called CP Banquet. The family moved the Lunch (20 Nov) and the Phere (21 Nov, now 11:00 PM) from WhatsApp-only to the public schedule, and replaced the Stage Program with the Reception.
 
@@ -80,7 +80,9 @@ Update 10 Oct 2026 (later): Mehendi added on 19 Nov at Shree Gyan Seva Sadan, Mo
 
 Mehendi map link supplied (pin on Shree Parshvanath Digambar Jain Panchayati Mandir). Temple vehicles 6:30–8:30 AM (tentative); other vehicle timings will be announced on the WhatsApp group. Vidayi needs no location. No dress code for the remaining functions.
 
-Still unresolved: which day(s) the temple vehicles run.
+Update 22 Oct 2026: Mehendi moved to the family home (Arihant Bhawan); Vidayi moved to 6:00 AM.
+
+Still unresolved: which day(s) the temple vehicles run, and a map link for Arihant Bhawan.
 
 ## Out of scope for milestone 1
 

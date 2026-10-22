@@ -462,6 +462,13 @@
         "location_needed": {
           "type": "boolean",
           "description": "false when no location should be shown (e.g. Vidayi)"
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Street address shown under the location, for functions away from the main venue"
         }
       },
       "additionalProperties": false

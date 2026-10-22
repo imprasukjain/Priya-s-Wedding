@@ -70,9 +70,11 @@ check(`Tea/coffee note shown on ${serviceDays.join(', ')} only`,
   eventData.event_dates.every((d) => panel(d).includes('Tea and coffee available throughout the day') === serviceDays.includes(d)));
 for (const item of eventData.schedule.filter((i) => i.offsite)) {
   const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
-  check(`${item.title} is marked as a separate venue (card, FAQ, calendar)`,
-    card.includes('Separate venue') && panelOf('help').includes(`is at ${item.location}`) &&
-    ics.includes(`LOCATION:${item.location.replace(/,/g, '\\,')}\r\n`));
+  const where = [item.location, item.address].filter(Boolean).join(', ');
+  check(`${item.title} is marked as a separate venue with its address (card, FAQ, calendar)`,
+    card.includes('Separate venue') && card.includes(item.location) && (!item.address || card.includes(item.address)) &&
+    panelOf('help').includes(item.address ?? item.location) &&
+    ics.includes(`LOCATION:${where.replace(/,/g, '\\,')}\r\n`));
 }
 check('Mehendi shows "7:00 PM onwards"', panel('2026-11-19').includes('7:00 PM onwards'));
 check('Every schedule item shows a timing status',

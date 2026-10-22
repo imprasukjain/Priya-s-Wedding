@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 69 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 68 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
