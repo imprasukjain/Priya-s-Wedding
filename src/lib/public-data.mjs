@@ -31,6 +31,7 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       end_time: item.end_time ?? null,
       title: item.title,
       location: item.location ?? null,
+      address: item.address ?? null,
       timing_status: item.timing_status,
       offsite: item.offsite === true,
       onwards: item.onwards === true,

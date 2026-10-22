@@ -66,7 +66,9 @@ function renderItem(item) {
     ? `${formatTime(item.start_time)} onwards · ends ${formatTime(item.end_time)} sharp`
     : item.onwards ? `${formatTime(item.start_time)} onwards` : formatTime(item.start_time);
   let location = '';
-  if (item.location) location = `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}</span></p>`;
+  if (item.location) {
+    location = `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}${item.address ? `<span class="event__address">${esc(item.address)}</span>` : ''}</span></p>`;
+  }
   else if (item.location_needed) location = `<p class="event__meta event__meta--pending">${icon('pin')}<span>Area at venue to be confirmed</span></p>`;
   const map = item.maps_url || item.maps_embed_url
     ? `${item.maps_label ? `<p class="event__maplabel">${esc(item.maps_label)}</p>` : ''}${mapBlock({ title: item.location ?? item.title, mapsUrl: item.maps_url, embedUrl: item.maps_embed_url, compact: true })}`
@@ -200,7 +202,7 @@ function renderVenue(pub) {
         <div class="detail">
           <div class="detail__label"><span>Where things happen</span>${uniquePendingTitles.length ? pending('Partly pending') : ''}</div>
           <ul class="areas">
-            ${knownAreas.map((i) => `<li><span class="areas__event">${esc(i.title)}</span><span class="areas__place">${esc(i.location)}</span></li>`).join('')}
+            ${knownAreas.map((i) => `<li><span class="areas__event">${esc(i.title)}</span><span class="areas__place">${esc([i.location, i.address].filter(Boolean).join(' · '))}</span></li>`).join('')}
             ${uniquePendingTitles.length ? `<li class="areas__pending"><span class="areas__event">${esc(uniquePendingTitles.join(', '))}</span><span class="areas__place">Areas within the venue to be confirmed</span></li>` : ''}
           </ul>
         </div>
@@ -459,7 +461,7 @@ const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Sev
 const daysInWords = (n) => `${NUMBER_WORDS[n] ?? n} day${n === 1 ? '' : 's'}`;
 
 const offsiteNote = (pub) => pub.days
-  .flatMap((d) => d.items.filter((i) => i.offsite).map((i) => ` The ${i.title} (${shortDay(i.date).label}) is at ${i.location}.`))
+  .flatMap((d) => d.items.filter((i) => i.offsite).map((i) => ` The ${i.title} (${shortDay(i.date).label}) is ${i.address ? `${i.location.toLowerCase()}: ${i.address}` : `at ${i.location}`}.`))
   .join('');
 
 const formatPhone = (p) => `${p.slice(0, 5)} ${p.slice(5)}`;
