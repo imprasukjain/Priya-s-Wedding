@@ -1,8 +1,7 @@
 // Renders the public site from the filtered public data object only.
 // Never pass raw event data to this module — see public-data.mjs.
-import {
-  dateRange, dayMonth, formatPostedAt, formatTime, longDay, shortDay, splitTime,
-} from './format.mjs';
+import { dateRange as enDateRange, dayMonth as enDayMonth, shortDay as enShortDay } from './format.mjs';
+import { LANGUAGES, langDir, languageNames } from './i18n.mjs';
 
 const esc = (value) =>
   String(value)
@@ -16,6 +15,13 @@ const esc = (value) =>
 // downloads, printing, embedded maps and the share sheet, so the preview
 // build turns those off (see renderPage's `embedded` option).
 let features = { downloads: true, print: true, mapEmbeds: true, shareSheet: true };
+
+// The language being rendered (see i18n.mjs), set at the start of renderPage.
+// t() returns interface text, tc() translates event content, F formats dates.
+let L;
+let F;
+const t = (key, vars) => L.t(key, vars);
+const tc = (text) => L.tc(text);
 
 const icon = (name) => `<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;
 
@@ -40,38 +46,40 @@ const ICONS = `
   <symbol id="i-id" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="11" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.8 15.5c.5-1.3 1.5-2 2.7-2s2.2.7 2.7 2M13.5 10h4.5M13.5 13.5h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </svg>`;
 
-const pending = (label = 'Pending') =>
+const pending = (label = t('pending')) =>
   `<span class="pill pill--pending"><span class="pill__dot" aria-hidden="true"></span>${esc(label)}</span>`;
 
 const statusPill = (status) =>
   status === 'provisional'
-    ? '<span class="pill pill--provisional">Provisional</span>'
-    : '<span class="pill pill--confirmed">Confirmed</span>';
+    ? `<span class="pill pill--provisional">${esc(t('provisional'))}</span>`
+    : `<span class="pill pill--confirmed">${esc(t('confirmed'))}</span>`;
 
 /** Attach "Available throughout 20 November"-style services to that day. */
 function servicesByDay(pub) {
   const perDay = new Map(pub.event_dates.map((d) => [d, []]));
   const general = [];
   for (const service of pub.guestServices) {
-    const day = pub.event_dates.find((d) => service.availability === `Available throughout ${dayMonth(d)}`);
-    if (day) perDay.get(day).push(`${service.name} available throughout the day`);
-    else general.push(`${service.name}: ${service.availability}`);
+    const day = pub.event_dates.find((d) => service.availability === `Available throughout ${enDayMonth(d)}`);
+    if (day) perDay.get(day).push(t('serviceAllDay', { name: tc(service.name) }));
+    else general.push(`${tc(service.name)}: ${tc(service.availability)}`);
   }
   return { perDay, general };
 }
 
 function renderItem(item) {
-  const { clock, meridiem } = splitTime(item.start_time);
+  const { clock, meridiem } = F.splitTime(item.start_time);
+  const start = F.formatTime(item.start_time);
   const timing = item.end_time
-    ? `${formatTime(item.start_time)} onwards · ends ${formatTime(item.end_time)} sharp`
-    : item.onwards ? `${formatTime(item.start_time)} onwards` : formatTime(item.start_time);
+    ? t('timeOnwardsEnds', { start, end: F.formatTime(item.end_time) })
+    : item.onwards ? t('timeOnwards', { start }) : start;
   let location = '';
   if (item.location) {
-    location = `<p class="event__meta">${icon('pin')}<span>${esc(item.location)}${item.address ? `<span class="event__address">${esc(item.address)}</span>` : ''}</span></p>`;
+    location = `<p class="event__meta">${icon('pin')}<span>${esc(tc(item.location))}${item.address ? `<span class="event__address">${esc(tc(item.address))}</span>` : ''}</span></p>`;
+  } else if (item.location_needed) {
+    location = `<p class="event__meta event__meta--pending">${icon('pin')}<span>${esc(t('areaTbc'))}</span></p>`;
   }
-  else if (item.location_needed) location = `<p class="event__meta event__meta--pending">${icon('pin')}<span>Area at venue to be confirmed</span></p>`;
   const map = item.maps_url || item.maps_embed_url
-    ? `${item.maps_label ? `<p class="event__maplabel">${esc(item.maps_label)}</p>` : ''}${mapBlock({ title: item.location ?? item.title, mapsUrl: item.maps_url, embedUrl: item.maps_embed_url, compact: true })}`
+    ? `${item.maps_label ? `<p class="event__maplabel">${esc(tc(item.maps_label))}</p>` : ''}${mapBlock({ title: tc(item.location ?? item.title), mapsUrl: item.maps_url, embedUrl: item.maps_embed_url, compact: true })}`
     : '';
 
   return `
@@ -83,24 +91,27 @@ function renderItem(item) {
           <div class="event__marker" aria-hidden="true"></div>
           <div class="event__body">
             <div class="event__head">
-              <h4 class="event__title">${esc(item.title)}</h4>
+              <h4 class="event__title">${esc(tc(item.title))}</h4>
               ${statusPill(item.timing_status)}
             </div>
-            ${item.offsite ? '<p class="event__offsite">Separate venue</p>' : ''}
+            ${item.offsite ? `<p class="event__offsite">${esc(t('separateVenue'))}</p>` : ''}
             <p class="event__timing${item.end_time ? ' event__timing--strong' : item.onwards ? '' : ' visually-hidden'}">${esc(timing)}</p>
             ${location}
             ${map}
-            ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(item.attire)}</span></p>` : ''}
-            <span class="event__next" hidden>Up next</span>
+            ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(tc(item.attire))}</span></p>` : ''}
+            <span class="event__next" hidden>${esc(t('upNext'))}</span>
           </div>
         </li>`;
 }
+
+const scheduleTitle = (n) =>
+  n === 1 ? t('scheduleTitleOne') : t('scheduleTitle', { count: L.ui.numberWords[n] ?? n });
 
 function renderSchedule(pub) {
   const { perDay, general } = servicesByDay(pub);
   const tabs = pub.days
     .map((day, i) => {
-      const s = shortDay(day.date);
+      const s = F.shortDay(day.date);
       return `
         <button class="tab" role="tab" id="tab-${day.date}" aria-controls="day-${day.date}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">
           <span class="tab__weekday">${esc(s.weekday)}</span>
@@ -117,36 +128,39 @@ function renderSchedule(pub) {
       return `
       <section class="day" id="day-${day.date}" role="tabpanel" aria-labelledby="tab-${day.date} day-title-${day.date}" data-day="${esc(day.date)}" tabindex="0">
         <header class="day__header">
-          <p class="day__index">Day ${i + 1}</p>
-          <h3 class="day__title" id="day-title-${day.date}">${esc(longDay(day.date))}</h3>
+          <p class="day__index">${esc(t('dayIndex', { n: i + 1 }))}</p>
+          <h3 class="day__title" id="day-title-${day.date}">${esc(F.longDay(day.date))}</h3>
         </header>
         ${services}
-        <ol class="timeline" aria-label="Events on ${esc(longDay(day.date))}">${day.items.map(renderItem).join('')}
+        <ol class="timeline" aria-label="${esc(t('eventsOn', { day: F.longDay(day.date) }))}">${day.items.map(renderItem).join('')}
         </ol>
       </section>`;
     })
     .join('');
 
   const generalServices = general.length
-    ? `<div class="services-general">${general.map((t) => `<p class="service">${icon('cup')}<span>${esc(t)}</span></p>`).join('')}</div>`
+    ? `<div class="services-general">${general.map((x) => `<p class="service">${icon('cup')}<span>${esc(x)}</span></p>`).join('')}</div>`
     : '';
+
+  const MARK = '\u0000provisional\u0000';
+  const lede = esc(t('scheduleLede', { provisional: MARK })).replace(MARK, `<em>${esc(t('provisional'))}</em>`);
 
   return `
   <section class="section" id="schedule" aria-labelledby="schedule-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Schedule</p>
-        <h2 class="section__title" id="schedule-title">${esc(daysInWords(pub.days.length))} of celebration</h2>
-        <p class="section__lede">All times are local (IST). Every time shown has been confirmed by the family unless it is marked <em>Provisional</em>.</p>
+        <p class="eyebrow">${esc(t('scheduleEyebrow'))}</p>
+        <h2 class="section__title" id="schedule-title">${esc(scheduleTitle(pub.days.length))}</h2>
+        <p class="section__lede">${lede}</p>
       </header>
-      <div class="tabs" role="tablist" aria-label="Choose a day" hidden>${tabs}
+      <div class="tabs" role="tablist" aria-label="${esc(t('chooseDay'))}" hidden>${tabs}
       </div>
       <div class="days">${panels}
       </div>
       ${generalServices}
       ${features.downloads || features.print ? `<div class="schedule-actions">
-        ${features.downloads ? `<a class="btn btn--ghost" href="schedule.ics" download>${icon('download')}<span>Add to calendar</span></a>` : ''}
-        ${features.print ? `<button class="btn btn--ghost" type="button" data-action="print" hidden>${icon('print')}<span>Print schedule</span></button>` : ''}
+        ${features.downloads ? `<a class="btn btn--ghost" href="schedule.ics" download>${icon('download')}<span>${esc(t('addToCalendar'))}</span></a>` : ''}
+        ${features.print ? `<button class="btn btn--ghost" type="button" data-action="print" hidden>${icon('print')}<span>${esc(t('printSchedule'))}</span></button>` : ''}
       </div>` : ''}
     </div>
   </section>`;
@@ -155,12 +169,13 @@ function renderSchedule(pub) {
 function mapBlock({ title, mapsUrl, embedUrl: rawEmbedUrl, compact = false }) {
   const embedUrl = features.mapEmbeds ? rawEmbedUrl : null;
   if (!mapsUrl && !embedUrl) return '';
+  const showLabel = t(compact ? 'showMap' : 'showMapHere');
   return `
           <div class="map">
             ${embedUrl ? `<div class="map__frame" data-map-frame hidden></div>` : ''}
             <div class="map__actions">
-              ${mapsUrl ? `<a class="btn btn--primary" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${icon('pin')}<span>${compact ? 'Open in Maps' : 'Open in Google Maps'}</span></a>` : ''}
-              ${embedUrl ? `<button class="btn btn--ghost" type="button" data-map-src="${esc(embedUrl)}" data-map-title="${esc(`Map: ${title}`)}" data-label="${compact ? 'Show map' : 'Show map here'}" hidden>${icon('map')}<span>${compact ? 'Show map' : 'Show map here'}</span></button>` : ''}
+              ${mapsUrl ? `<a class="btn btn--primary" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${icon('pin')}<span>${esc(t(compact ? 'openInMaps' : 'openInGoogleMaps'))}</span></a>` : ''}
+              ${embedUrl ? `<button class="btn btn--ghost" type="button" data-map-src="${esc(embedUrl)}" data-map-title="${esc(t('mapTitle', { place: title }))}" data-label="${esc(showLabel)}" hidden>${icon('map')}<span>${esc(showLabel)}</span></button>` : ''}
             </div>
           </div>`;
 }
@@ -169,41 +184,41 @@ function renderVenue(pub) {
   const { venue } = pub;
   const knownAreas = pub.days.flatMap((d) => d.items).filter((i) => i.location);
   const pendingAreas = pub.days.flatMap((d) => d.items).filter((i) => !i.location && i.location_needed);
-  const uniquePendingTitles = [...new Set(pendingAreas.map((i) => i.title))];
+  const uniquePendingTitles = [...new Set(pendingAreas.map((i) => tc(i.title)))];
 
   let address;
-  if (venue.address) address = `<p class="detail__value">${esc(venue.address)}</p>`;
+  if (venue.address) address = `<p class="detail__value">${esc(tc(venue.address))}</p>`;
   else if (venue.landmark) {
-    address = `<p class="detail__value detail__value--lead">${esc([venue.landmark, venue.locality].filter(Boolean).join(', '))}</p>
-          <p class="detail__note">Full postal address to follow.</p>`;
-  } else address = `<p class="detail__value detail__value--pending">Full address awaiting confirmation from the family and venue.</p>`;
+    address = `<p class="detail__value detail__value--lead">${esc([tc(venue.landmark), tc(venue.locality)].filter(Boolean).join(', '))}</p>
+          <p class="detail__note">${esc(t('postalToFollow'))}</p>`;
+  } else address = `<p class="detail__value detail__value--pending">${esc(t('addressAwaiting'))}</p>`;
 
   const directions = venue.maps_url || venue.maps_embed_url
-    ? `${venue.maps_label ? `<p class="detail__value">${esc(venue.maps_label)}</p>` : ''}${mapBlock({ title: venue.landmark ? `${venue.name}, ${venue.landmark.toLowerCase()}` : venue.name, mapsUrl: venue.maps_url, embedUrl: venue.maps_embed_url })}`
-    : `<p class="detail__value detail__value--pending">An approved map link will be added here.</p>`;
+    ? `${venue.maps_label ? `<p class="detail__value">${esc(tc(venue.maps_label))}</p>` : ''}${mapBlock({ title: [venue.name, tc(venue.landmark)].filter(Boolean).join(', '), mapsUrl: venue.maps_url, embedUrl: venue.maps_embed_url })}`
+    : `<p class="detail__value detail__value--pending">${esc(t('mapPending'))}</p>`;
 
   return `
   <section class="section" id="venue" aria-labelledby="venue-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Venue</p>
-        <h2 class="section__title" id="venue-title">${esc(venue.name)}</h2>
-        ${venue.locality ? `<p class="section__lede">${esc(venue.locality)}</p>` : ''}
+        <p class="eyebrow">${esc(t('venueEyebrow'))}</p>
+        <h2 class="section__title" id="venue-title">${esc(tc(venue.name))}</h2>
+        ${venue.locality ? `<p class="section__lede">${esc(tc(venue.locality))}</p>` : ''}
       </header>
       <div class="card venue-card">
         <div class="detail">
-          <div class="detail__label"><span>Address</span>${venue.address || venue.landmark ? '' : pending()}</div>
+          <div class="detail__label"><span>${esc(t('address'))}</span>${venue.address || venue.landmark ? '' : pending()}</div>
           ${address}
         </div>
         <div class="detail">
-          <div class="detail__label"><span>Map &amp; directions</span>${venue.maps_url ? '' : pending()}</div>
+          <div class="detail__label"><span>${esc(t('mapAndDirections'))}</span>${venue.maps_url ? '' : pending()}</div>
           ${directions}
         </div>
         <div class="detail">
-          <div class="detail__label"><span>Where things happen</span>${uniquePendingTitles.length ? pending('Partly pending') : ''}</div>
+          <div class="detail__label"><span>${esc(t('whereThingsHappen'))}</span>${uniquePendingTitles.length ? pending(t('partlyPending')) : ''}</div>
           <ul class="areas">
-            ${knownAreas.map((i) => `<li><span class="areas__event">${esc(i.title)}</span><span class="areas__place">${esc([i.location, i.address].filter(Boolean).join(' · '))}</span></li>`).join('')}
-            ${uniquePendingTitles.length ? `<li class="areas__pending"><span class="areas__event">${esc(uniquePendingTitles.join(', '))}</span><span class="areas__place">Areas within the venue to be confirmed</span></li>` : ''}
+            ${knownAreas.map((i) => `<li><span class="areas__event">${esc(tc(i.title))}</span><span class="areas__place">${esc([tc(i.location), tc(i.address)].filter(Boolean).join(' · '))}</span></li>`).join('')}
+            ${uniquePendingTitles.length ? `<li class="areas__pending"><span class="areas__event">${esc(uniquePendingTitles.join(', '))}</span><span class="areas__place">${esc(t('areasTbc'))}</span></li>` : ''}
           </ul>
         </div>
       </div>
@@ -218,13 +233,13 @@ function renderStay(stay, venueName) {
           <div class="stay__head">
             <span class="stay__icon">${icon('bed')}</span>
             <div>
-              <h4 class="stay__name">${esc(stay.name)}</h4>
-              ${stay.note ? `<p class="stay__note">${esc(stay.note)}</p>` : ''}
+              <h4 class="stay__name">${esc(tc(stay.name))}</h4>
+              ${stay.note ? `<p class="stay__note">${esc(tc(stay.note))}</p>` : ''}
             </div>
           </div>
           ${atVenue && !stay.maps_url
-            ? `<div class="map__actions"><a class="btn btn--ghost" href="#venue">${icon('pin')}<span>See venue details</span></a></div>`
-            : mapBlock({ title: stay.name, mapsUrl: stay.maps_url, embedUrl: stay.maps_embed_url })}
+            ? `<div class="map__actions"><a class="btn btn--ghost" href="#venue">${icon('pin')}<span>${esc(t('seeVenueDetails'))}</span></a></div>`
+            : mapBlock({ title: tc(stay.name), mapsUrl: stay.maps_url, embedUrl: stay.maps_embed_url })}
         </li>`;
 }
 
@@ -237,30 +252,32 @@ function renderTravel(pub) {
       <ul class="stays">${list.map((s) => renderStay(s, pub.venue.name)).join('')}
       </ul>`
     : '';
+  const statusPillHtml = transport.status === 'pending' ? pending(t('timingsSoon'))
+    : transport.status === 'tentative' ? pending(t('tentative')) : '';
 
   return `
   <section class="section" id="travel" aria-labelledby="travel-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Travel &amp; stay</p>
-        <h2 class="section__title" id="travel-title">Getting here &amp; staying over</h2>
+        <p class="eyebrow">${esc(t('travelEyebrow'))}</p>
+        <h2 class="section__title" id="travel-title">${esc(t('travelTitle'))}</h2>
       </header>
       <div class="card transport">
-        <div class="detail__label"><span>Getting around</span>${transport.status === 'pending' ? pending('Timings soon') : transport.status === 'tentative' ? pending('Tentative') : ''}</div>
+        <div class="detail__label"><span>${esc(t('gettingAround'))}</span>${statusPillHtml}</div>
         <div class="transport__body">
           <span class="stay__icon">${icon('car')}</span>
           <div>
-            ${transport.destinations.length ? `<p class="transport__lead">Vehicles from the venue to</p>
-            <ul class="chips">${transport.destinations.map((d) => `<li class="chip">${esc(d)}</li>`).join('')}</ul>` : ''}
+            ${transport.destinations.length ? `<p class="transport__lead">${esc(t('vehiclesTo'))}</p>
+            <ul class="chips">${transport.destinations.map((d) => `<li class="chip">${esc(tc(d))}</li>`).join('')}</ul>` : ''}
             ${transport.timings.length ? `<ul class="timings">${transport.timings
-              .map((t) => `<li><span class="timings__label">${esc(t.label)}</span><span class="timings__time">${esc(formatTime(t.from))} – ${esc(formatTime(t.to))}${t.tentative ? ' <em>(tentative)</em>' : ''}</span></li>`)
+              .map((x) => `<li><span class="timings__label">${esc(tc(x.label))}</span><span class="timings__time">${esc(F.formatTime(x.from))} – ${esc(F.formatTime(x.to))}${x.tentative ? ` <em>${esc(t('tentativeParen'))}</em>` : ''}</span></li>`)
               .join('')}</ul>` : ''}
-            ${transport.note ? `<p class="transport__note">${esc(transport.note)}</p>` : ''}
+            ${transport.note ? `<p class="transport__note">${esc(tc(transport.note))}</p>` : ''}
           </div>
         </div>
       </div>
-      ${group('Where guests are staying', guests)}
-      ${group('For the Barat', barat)}
+      ${group(t('whereGuestsStay'), guests)}
+      ${group(t('forBarat'), barat)}
       ${aadhaarNote(pub)}
     </div>
   </section>`;
@@ -270,118 +287,122 @@ function comingSoon({ iconName, title, text }) {
   return `<div class="card empty">
         <span class="empty__icon">${icon(iconName)}</span>
         <div>
-          <div class="empty__row"><h3 class="empty__title">${esc(title)}</h3>${pending('To be announced')}</div>
+          <div class="empty__row"><h3 class="empty__title">${esc(title)}</h3>${pending(t('toBeAnnounced'))}</div>
           <p class="empty__text">${esc(text)}</p>
         </div>
       </div>`;
 }
 
+// The RSVP form is shown in the guest's language, but the values it sends
+// (and the WhatsApp message app.js composes) stay in English, so every RSVP
+// reaching the family reads the same way.
 function rsvpForm(pub) {
   const { rsvp } = pub;
-  const couple = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
+  const coupleEn = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
   const days = pub.event_dates;
+  const rangeEn = enDateRange(days);
   const checkbox = (name, value, label) => `
               <label class="choice">
                 <input type="checkbox" name="${name}" value="${esc(value)}" checked>
                 <span>${esc(label)}</span>
               </label>`;
   const arrivalDays = [
-    [`Before ${dayMonth(days[0])}`, `Before ${shortDay(days[0]).label}`],
-    ...days.slice(0, -1).map((d) => [`${shortDay(d).weekday}, ${dayMonth(d)}`, `${shortDay(d).weekday}, ${shortDay(d).label}`]),
+    [`Before ${enDayMonth(days[0])}`, t('beforeDay', { day: F.shortDay(days[0]).label })],
+    ...days.slice(0, -1).map((d) => [`${enShortDay(d).weekday}, ${enDayMonth(d)}`, `${F.shortDay(d).weekday}, ${F.shortDay(d).label}`]),
   ];
-  const travelModes = ['Train', 'Bus', 'Car / taxi', 'Other'];
+  const travelModes = [['Train', 'travelTrain'], ['Bus', 'travelBus'], ['Car / taxi', 'travelCar'], ['Other', 'travelOther']];
   const radio = (name, value, label, checked, required = false) => `
               <label class="choice">
                 <input type="radio" name="${name}" value="${esc(value)}"${checked ? ' checked' : ''}${required ? ' required' : ''}>
                 <span>${esc(label)}</span>
               </label>`;
   const wa = `91${rsvp.whatsapp_number}`;
-  const fallbackText = `Hi! RSVP for ${couple}’s wedding (${dateRange(days)}).\nName:\nNumber of guests:\nHotel room needed (Yes/No):\nETA (day and time):\nMode of travel:`;
+  const fallbackText = `Hi! RSVP for ${coupleEn}’s wedding (${rangeEn}).\nName:\nNumber of guests:\nHotel room needed (Yes/No):\nETA (day and time):\nMode of travel:`;
 
   return `
-      <form class="card rsvp-form" data-rsvp-form data-wa-url="https://wa.me/${esc(wa)}" data-couple="${esc(couple)}" data-dates="${esc(dateRange(days))}" hidden>
+      <form class="card rsvp-form" data-rsvp-form data-wa-url="https://wa.me/${esc(wa)}" data-couple="${esc(coupleEn)}" data-dates="${esc(rangeEn)}" hidden>
         <div class="field">
-          <label class="field__label" for="rsvp-name">Your name</label>
-          <input class="input" id="rsvp-name" name="name" type="text" autocomplete="name" required maxlength="80" placeholder="Full name">
+          <label class="field__label" for="rsvp-name">${esc(t('yourName'))}</label>
+          <input class="input" id="rsvp-name" name="name" type="text" autocomplete="name" required maxlength="80" placeholder="${esc(t('fullNamePlaceholder'))}">
         </div>
         <div class="field">
-          <label class="field__label" for="rsvp-guests">Number of guests <span class="field__hint">including you</span></label>
+          <label class="field__label" for="rsvp-guests">${esc(t('guestsLabel'))} <span class="field__hint">${esc(t('guestsHint'))}</span></label>
           <div class="stepper">
-            <button type="button" class="stepper__btn" data-step="-1" aria-label="One fewer guest">−</button>
+            <button type="button" class="stepper__btn" data-step="-1" aria-label="${esc(t('oneFewerGuest'))}">−</button>
             <input class="input stepper__input" id="rsvp-guests" name="guests" type="number" inputmode="numeric" min="1" max="30" value="1" required>
-            <button type="button" class="stepper__btn" data-step="1" aria-label="One more guest">+</button>
+            <button type="button" class="stepper__btn" data-step="1" aria-label="${esc(t('oneMoreGuest'))}">+</button>
           </div>
         </div>
         <fieldset class="field">
-          <legend class="field__label">Days you’ll attend <span class="field__hint">untick any you’ll miss</span></legend>
-          <div class="choices" data-days>${days.map((d) => checkbox('days', `${shortDay(d).weekday} ${shortDay(d).label}`, `${shortDay(d).weekday}, ${shortDay(d).label}`)).join('')}
+          <legend class="field__label">${esc(t('daysLabel'))} <span class="field__hint">${esc(t('daysHint'))}</span></legend>
+          <div class="choices" data-days>${days.map((d) => checkbox('days', `${enShortDay(d).weekday} ${enShortDay(d).label}`, `${F.shortDay(d).weekday}, ${F.shortDay(d).label}`)).join('')}
           </div>
         </fieldset>
         <fieldset class="field">
-          <legend class="field__label">Do you need a hotel room?</legend>
-          <div class="choices">${radio('room', 'Yes', 'Yes, please', true)}${radio('room', 'No', 'No, thanks', false)}
+          <legend class="field__label">${esc(t('roomQuestion'))}</legend>
+          <div class="choices">${radio('room', 'Yes', t('yesPlease'), true)}${radio('room', 'No', t('noThanks'), false)}
           </div>
         </fieldset>
         <div class="field" data-rooms>
-          <label class="field__label" for="rsvp-rooms">Rooms needed</label>
+          <label class="field__label" for="rsvp-rooms">${esc(t('roomsNeeded'))}</label>
           <div class="stepper">
-            <button type="button" class="stepper__btn" data-step="-1" aria-label="One fewer room">−</button>
+            <button type="button" class="stepper__btn" data-step="-1" aria-label="${esc(t('oneFewerRoom'))}">−</button>
             <input class="input stepper__input" id="rsvp-rooms" name="rooms" type="number" inputmode="numeric" min="1" max="10" value="1">
-            <button type="button" class="stepper__btn" data-step="1" aria-label="One more room">+</button>
+            <button type="button" class="stepper__btn" data-step="1" aria-label="${esc(t('oneMoreRoom'))}">+</button>
           </div>
         </div>
         <fieldset class="field">
-          <legend class="field__label">Expected arrival (ETA) <span class="field__hint">in Morena</span></legend>
+          <legend class="field__label">${esc(t('etaLabel'))} <span class="field__hint">${esc(t('etaHint'))}</span></legend>
           <div class="choices">${arrivalDays.map(([value, label], i) => radio('eta_day', value, label, i === 1)).join('')}
           </div>
-          <label class="visually-hidden" for="rsvp-eta-time">Arrival time</label>
+          <label class="visually-hidden" for="rsvp-eta-time">${esc(t('arrivalTime'))}</label>
           <div class="eta-time">
             <input class="input" id="rsvp-eta-time" name="eta_time" type="time" step="900">
-            <span class="field__hint">Approximate time, if you know it</span>
+            <span class="field__hint">${esc(t('etaTimeHint'))}</span>
           </div>
         </fieldset>
         <fieldset class="field">
-          <legend class="field__label">Mode of travel</legend>
-          <div class="choices">${travelModes.map((m, i) => radio('travel', m, m, false, i === 0)).join('')}
+          <legend class="field__label">${esc(t('travelLabel'))}</legend>
+          <div class="choices">${travelModes.map(([value, key], i) => radio('travel', value, t(key), false, i === 0)).join('')}
           </div>
-          <label class="visually-hidden" for="rsvp-travel-details">Travel details</label>
-          <input class="input" id="rsvp-travel-details" name="travel_details" type="text" maxlength="100" placeholder="Train or bus number, pickup needed? (optional)">
+          <label class="visually-hidden" for="rsvp-travel-details">${esc(t('travelDetails'))}</label>
+          <input class="input" id="rsvp-travel-details" name="travel_details" type="text" maxlength="100" placeholder="${esc(t('travelDetailsPlaceholder'))}">
         </fieldset>
         <div class="field">
-          <label class="field__label" for="rsvp-note">Anything else? <span class="field__hint">optional</span></label>
-          <textarea class="input" id="rsvp-note" name="note" rows="2" maxlength="300" placeholder="Names of guests, special requests…"></textarea>
+          <label class="field__label" for="rsvp-note">${esc(t('anythingElse'))} <span class="field__hint">${esc(t('optional'))}</span></label>
+          <textarea class="input" id="rsvp-note" name="note" rows="2" maxlength="300" placeholder="${esc(t('notePlaceholder'))}"></textarea>
         </div>
-        <a class="btn btn--primary btn--block" data-rsvp-send href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>Send RSVP on WhatsApp</span></a>
-        <p class="rsvp__fine">This opens WhatsApp with your RSVP written for you — just press send. Nothing is stored on this website.</p>
+        <a class="btn btn--primary btn--block" data-rsvp-send href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>${esc(t('sendRsvp'))}</span></a>
+        <p class="rsvp__fine">${esc(t('rsvpFine'))}</p>
       </form>
       <div class="card rsvp-fallback" data-rsvp-fallback>
-        <p>Send your name, number of guests and whether you need a hotel room on WhatsApp.</p>
-        <a class="btn btn--primary" href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>RSVP on WhatsApp</span></a>
+        <p>${esc(t('rsvpFallback'))}</p>
+        <a class="btn btn--primary" href="https://wa.me/${esc(wa)}?text=${esc(encodeURIComponent(fallbackText))}" target="_blank" rel="noopener">${icon('send')}<span>${esc(t('rsvpOnWhatsapp'))}</span></a>
       </div>`;
 }
 
 const aadhaarNote = (pub) => pub.travel.check_in_note
-  ? `<div class="callout">${icon('id')}<p><strong>Staying at a hotel?</strong> ${esc(pub.travel.check_in_note)}</p></div>`
+  ? `<div class="callout">${icon('id')}<p><strong>${esc(t('stayingAtHotel'))}</strong> ${esc(tc(pub.travel.check_in_note))}</p></div>`
   : '';
 
 function renderRsvp(pub) {
   const { rsvp } = pub;
-  const deadline = rsvp.deadline ? `Please RSVP by ${longDay(rsvp.deadline)}.` : '';
+  const deadline = rsvp.deadline ? t('rsvpDeadline', { date: F.longDay(rsvp.deadline) }) : '';
   let body;
   if (rsvp.status === 'confirmed' && rsvp.method === 'whatsapp' && rsvp.whatsapp_number) body = rsvpForm(pub);
   else if (rsvp.status === 'confirmed' && rsvp.url) {
     body = `<div class="card rsvp">
-        <a class="btn btn--primary" href="${esc(rsvp.url)}" target="_blank" rel="noopener">${icon('check')}<span>RSVP now</span></a>
+        <a class="btn btn--primary" href="${esc(rsvp.url)}" target="_blank" rel="noopener">${icon('check')}<span>${esc(t('rsvpNow'))}</span></a>
       </div>`;
-  } else body = comingSoon({ iconName: 'check', title: 'RSVP opens soon', text: 'How to RSVP will be shared here and on WhatsApp. Please keep an eye on this page.' });
+  } else body = comingSoon({ iconName: 'check', title: t('rsvpOpensSoon'), text: t('rsvpOpensSoonText') });
 
   return `
   <section class="section" id="rsvp" aria-labelledby="rsvp-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">RSVP</p>
-        <h2 class="section__title" id="rsvp-title">Let us know you’re coming</h2>
-        ${deadline || rsvp.note ? `<p class="section__lede">${deadline ? `<strong class="deadline">${esc(deadline)}</strong> ` : ''}${esc(rsvp.note ?? '')}</p>` : ''}
+        <p class="eyebrow">${esc(t('rsvpEyebrow'))}</p>
+        <h2 class="section__title" id="rsvp-title">${esc(t('rsvpTitle'))}</h2>
+        ${deadline || rsvp.note ? `<p class="section__lede">${deadline ? `<strong class="deadline">${esc(deadline)}</strong> ` : ''}${esc(tc(rsvp.note) ?? '')}</p>` : ''}
       </header>
       ${body}
       ${aadhaarNote(pub)}
@@ -396,17 +417,17 @@ function renderDressCode(pub) {
         .map((i) => `
         <li class="dress__item">
           <span class="stay__icon">${icon('shirt')}</span>
-          <div><p class="dress__label">${esc(i.label)}</p><p class="dress__guidance">${esc(i.guidance)}</p></div>
+          <div><p class="dress__label">${esc(tc(i.label))}</p><p class="dress__guidance">${esc(tc(i.guidance))}</p></div>
         </li>`)
         .join('')}
       </ul>`
-    : comingSoon({ iconName: 'shirt', title: 'Dress code to be announced', text: 'Outfit guidance for each function will be added here once the family finalises it.' });
+    : comingSoon({ iconName: 'shirt', title: t('dressTba'), text: t('dressTbaText') });
   return `
   <section class="section" id="dress-code" aria-labelledby="dress-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Dress code</p>
-        <h2 class="section__title" id="dress-title">What to wear</h2>
+        <p class="eyebrow">${esc(t('dressEyebrow'))}</p>
+        <h2 class="section__title" id="dress-title">${esc(t('dressTitle'))}</h2>
       </header>
       ${body}
     </div>
@@ -419,9 +440,9 @@ function renderUpdates(pub) {
         .map(
           (u, i) => `
         <li class="update${i === 0 ? ' update--latest' : ''}">
-          <div class="update__meta">${i === 0 ? '<span class="pill pill--accent">Latest</span>' : ''}<time datetime="${esc(u.posted_at)}">${esc(formatPostedAt(u.posted_at))}</time></div>
-          <h3 class="update__title">${esc(u.title)}</h3>
-          <p class="update__message">${esc(u.message)}</p>
+          <div class="update__meta">${i === 0 ? `<span class="pill pill--accent">${esc(t('latest'))}</span>` : ''}<time datetime="${esc(u.posted_at)}">${esc(F.formatPostedAt(u.posted_at))}</time></div>
+          <h3 class="update__title">${esc(tc(u.title))}</h3>
+          <p class="update__message">${esc(tc(u.message))}</p>
         </li>`,
         )
         .join('')}
@@ -429,8 +450,8 @@ function renderUpdates(pub) {
     : `<div class="card empty">
         <span class="empty__icon">${icon('bell')}</span>
         <div>
-          <h3 class="empty__title">No updates yet</h3>
-          <p class="empty__text">Any change on the day — timings, areas, reminders — will be posted here first, newest on top.</p>
+          <h3 class="empty__title">${esc(t('noUpdates'))}</h3>
+          <p class="empty__text">${esc(t('noUpdatesText'))}</p>
         </div>
       </div>`;
 
@@ -438,18 +459,18 @@ function renderUpdates(pub) {
   <section class="section" id="updates" aria-labelledby="updates-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Updates</p>
-        <h2 class="section__title" id="updates-title">Latest from the family</h2>
+        <p class="eyebrow">${esc(t('updatesEyebrow'))}</p>
+        <h2 class="section__title" id="updates-title">${esc(t('updatesTitle'))}</h2>
       </header>
       ${list}
       <div class="card share" id="share">
         <div class="share__copy">
-          <h3 class="share__title">Share this page</h3>
-          <p class="share__text">Send guests here for the schedule and any day-of changes.</p>
+          <h3 class="share__title">${esc(t('shareTitle'))}</h3>
+          <p class="share__text">${esc(t('shareText'))}</p>
         </div>
         <div class="share__actions">
-          ${features.shareSheet ? `<button class="btn btn--primary" type="button" data-action="share" hidden>${icon('share')}<span>Share</span></button>` : ''}
-          <button class="btn btn--ghost" type="button" data-action="copy" hidden>${icon('copy')}<span>Copy message</span></button>
+          ${features.shareSheet ? `<button class="btn btn--primary" type="button" data-action="share" hidden>${icon('share')}<span>${esc(t('share'))}</span></button>` : ''}
+          <button class="btn btn--ghost" type="button" data-action="copy" hidden>${icon('copy')}<span>${esc(t('copyMessage'))}</span></button>
         </div>
         <p class="share__status" role="status" aria-live="polite"></p>
       </div>
@@ -457,23 +478,25 @@ function renderUpdates(pub) {
   </section>`;
 }
 
-const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'];
-const daysInWords = (n) => `${NUMBER_WORDS[n] ?? n} day${n === 1 ? '' : 's'}`;
-
 const offsiteNote = (pub) => pub.days
-  .flatMap((d) => d.items.filter((i) => i.offsite).map((i) => ` The ${i.title} (${shortDay(i.date).label}) is ${i.address ? `${i.location.toLowerCase()}: ${i.address}` : `at ${i.location}`}.`))
+  .flatMap((d) => d.items.filter((i) => i.offsite).map((i) => ` ${t('faqOffsite', {
+    title: tc(i.title),
+    day: F.shortDay(i.date).label,
+    place: [tc(i.location), tc(i.address)].filter(Boolean).join(', '),
+  })}`))
   .join('');
 
 const formatPhone = (p) => `${p.slice(0, 5)} ${p.slice(5)}`;
 
 function renderHelp(pub) {
+  const venueAddress = tc(pub.venue.address) ?? [tc(pub.venue.landmark), tc(pub.venue.locality)].filter(Boolean).join(', ');
   const faqs = [
-    ['When and where is the wedding?', `${dateRange(pub.event_dates)} at ${pub.venue.name}, ${pub.venue.address ?? [pub.venue.landmark, pub.venue.locality].filter(Boolean).join(', ')}.${offsiteNote(pub)}`],
-    ['How do I get from the station to the venue?', pub.travel.transport.note || 'Transport details will be shared soon.'],
-    ...(pub.rsvp.deadline ? [['When should I RSVP?', `By ${longDay(pub.rsvp.deadline)}, using the RSVP section above. It helps the family book and allot hotel rooms.`]] : []),
-    ...(pub.travel.check_in_note ? [['Do I need ID for the hotel?', pub.travel.check_in_note]] : []),
-    ['Where will changes be announced?', 'In the Updates section of this page and on WhatsApp. Please check before heading to each function.'],
-    ...(features.downloads ? [['Can I add the functions to my calendar?', 'Yes — use “Add to calendar” under the schedule to download all the public functions at once.']] : []),
+    [t('faqWhenWhereQ'), `${t('faqWhenWhereA', { range: F.dateRange(pub.event_dates), venue: tc(pub.venue.name), address: venueAddress })}${offsiteNote(pub)}`],
+    [t('faqStationQ'), tc(pub.travel.transport.note) || t('transportSoon')],
+    ...(pub.rsvp.deadline ? [[t('faqRsvpQ'), t('faqRsvpA', { date: F.longDay(pub.rsvp.deadline) })]] : []),
+    ...(pub.travel.check_in_note ? [[t('faqIdQ'), tc(pub.travel.check_in_note)]] : []),
+    [t('faqChangesQ'), t('faqChangesA')],
+    ...(features.downloads ? [[t('faqCalendarQ'), t('faqCalendarA')]] : []),
   ];
   const contacts = pub.contacts.length
     ? `<ul class="contacts">${pub.contacts
@@ -484,25 +507,25 @@ function renderHelp(pub) {
             <div class="contact__info">
               <p class="contact__name">${esc(c.name)}</p>
               <div class="contact__phones">${c.phones
-                .map((p) => `<a class="contact__call" href="tel:+91${esc(p)}" aria-label="Call ${esc(c.name)} on ${esc(formatPhone(p))}">${icon('phone')}<span>${esc(formatPhone(p))}</span></a>`)
+                .map((p) => `<a class="contact__call" href="tel:+91${esc(p)}" aria-label="${esc(t('callAria', { name: c.name, phone: formatPhone(p) }))}">${icon('phone')}<span>${esc(formatPhone(p))}</span></a>`)
                 .join('')}</div>
             </div>
           </li>`,
         )
         .join('')}
         </ul>`
-    : `<p class="contact__body">${icon('phone')}<span>The family will share an on-day contact here.</span></p>`;
+    : `<p class="contact__body">${icon('phone')}<span>${esc(t('contactPending'))}</span></p>`;
   return `
   <section class="section" id="help" aria-labelledby="help-title">
     <div class="container">
       <header class="section__header">
-        <p class="eyebrow">Help</p>
-        <h2 class="section__title" id="help-title">Need a hand?</h2>
-        <p class="section__lede">Call any of the family members below on the day — tap a number to call.</p>
+        <p class="eyebrow">${esc(t('helpEyebrow'))}</p>
+        <h2 class="section__title" id="help-title">${esc(t('helpTitle'))}</h2>
+        <p class="section__lede">${esc(t('helpLede'))}</p>
       </header>
       <div class="help-grid">
         <div class="card contacts-card">
-          <div class="detail__label"><span>On-day contacts</span>${pub.contacts.length ? '' : pending()}</div>
+          <div class="detail__label"><span>${esc(t('onDayContacts'))}</span>${pub.contacts.length ? '' : pending()}</div>
           ${contacts}
         </div>
         <div class="faq">
@@ -521,31 +544,52 @@ function renderHelp(pub) {
   </section>`;
 }
 
-export function renderPage(pub, { generatedAt, preview, embedded = false, inlineCss = '', inlineJs = '' }) {
+/** Link to the same page in another language, relative to the current page. */
+const hrefFor = (code) => `${L.code === 'en' ? '' : '../'}${langDir(code)}` || './';
+
+function languageSwitcher(extraClass, names) {
+  return `<nav class="lang ${extraClass}" aria-label="${esc(t('languageNav'))}">${LANGUAGES
+    .map((code) => (code === L.code
+      ? `<span class="lang__item" aria-current="true" lang="${code}">${esc(names[code])}</span>`
+      : `<a class="lang__item" href="${hrefFor(code)}" hreflang="${code}" lang="${code}" data-lang="${code}">${esc(names[code])}</a>`))
+    .join('')}</nav>`;
+}
+
+// Strings app.js needs at runtime, in the page's language.
+const SCRIPT_STRINGS = ['daysToGo', 'tomorrow', 'happeningToday', 'hideMap', 'copied', 'copyFailed', 'tickOneDay'];
+
+export function renderPage(pub, { lang, generatedAt, preview, embedded = false, inlineCss = '', inlineJs = '' }) {
+  L = lang;
+  F = lang.fmt;
   features = embedded
     ? { downloads: false, print: false, mapEmbeds: false, shareSheet: false }
     : { downloads: true, print: true, mapEmbeds: true, shareSheet: true };
-  const couple = `${pub.couple.partner_one} & ${pub.couple.partner_two}`;
-  const range = dateRange(pub.event_dates);
-  const venueLine = [pub.venue.name, pub.venue.locality].filter(Boolean).join(', ');
+  const names = languageNames();
+  const base = L.code === 'en' ? '' : '../';
+  const p1 = tc(pub.couple.partner_one);
+  const p2 = tc(pub.couple.partner_two);
+  const couple = `${p1} & ${p2}`;
+  const range = F.dateRange(pub.event_dates);
+  const venueLine = [tc(pub.venue.name), tc(pub.venue.locality)].filter(Boolean).join(', ');
   const latest = pub.updates[0];
-  const shareText = `${couple}’s wedding · ${range} · ${venueLine}. Schedule, venue details and day-of updates: {url}`;
+  const functionCount = pub.days.reduce((n, d) => n + d.items.length, 0);
   const monogram = `${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}`;
+  const scriptStrings = Object.fromEntries(SCRIPT_STRINGS.map((k) => [k, t(k)]));
   const content = `
 ${ICONS}
-  <a class="skip-link" href="#main">Skip to content</a>
-  ${preview ? `<div class="preview-bar" role="note">Preview · not yet approved for publishing</div>` : ''}
+  <a class="skip-link" href="#main">${esc(t('skipToContent'))}</a>
+  ${preview ? `<div class="preview-bar" role="note">${esc(t('previewBar'))}</div>` : ''}
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="monogram" href="#top" aria-label="${esc(couple)} — back to top">${monogram}</a>
-      <nav class="nav" aria-label="Sections">
-        <a href="#schedule">Schedule</a>
-        <a href="#venue">Venue</a>
-        <a href="#travel">Travel</a>
-        <a href="#rsvp">RSVP</a>
-        <a href="#dress-code">Dress code</a>
-        <a href="#updates">Updates</a>
-        <a href="#help">Help</a>
+      <a class="monogram" href="#top" aria-label="${esc(t('backToTop', { couple }))}">${monogram}</a>
+      <nav class="nav" aria-label="${esc(t('sectionsNav'))}">
+        <a href="#schedule">${esc(t('navSchedule'))}</a>
+        <a href="#venue">${esc(t('navVenue'))}</a>
+        <a href="#travel">${esc(t('navTravel'))}</a>
+        <a href="#rsvp">${esc(t('navRsvp'))}</a>
+        <a href="#dress-code">${esc(t('navDress'))}</a>
+        <a href="#updates">${esc(t('navUpdates'))}</a>
+        <a href="#help">${esc(t('navHelp'))}</a>
       </nav>
     </div>
   </header>
@@ -553,36 +597,37 @@ ${ICONS}
   <main id="main">
   <section class="hero" id="top" aria-labelledby="hero-title">
     <div class="container hero__inner">
-      <p class="eyebrow hero__eyebrow">Together with their families</p>
+      ${embedded ? '' : languageSwitcher('lang--hero', names)}
+      <p class="eyebrow hero__eyebrow">${esc(t('heroEyebrow'))}</p>
       <h1 class="hero__names" id="hero-title">
-        <span>${esc(pub.couple.partner_one)}</span>
-        <span class="hero__amp" aria-hidden="true">&amp;</span><span class="visually-hidden"> and </span>
-        <span>${esc(pub.couple.partner_two)}</span>
+        <span>${esc(p1)}</span>
+        <span class="hero__amp" aria-hidden="true">&amp;</span><span class="visually-hidden"> ${esc(t('and'))} </span>
+        <span>${esc(p2)}</span>
       </h1>
       <div class="hero__facts">
         <p class="hero__fact">${icon('calendar')}<span>${esc(range)}</span></p>
         <p class="hero__fact">${icon('pin')}<span>${esc(venueLine)}</span></p>
       </div>
       <p class="hero__countdown" data-countdown data-start="${esc(pub.event_dates[0])}" data-end="${esc(pub.event_dates[pub.event_dates.length - 1])}" hidden></p>
-      <nav class="quick-actions" aria-label="Quick actions">
+      <nav class="quick-actions" aria-label="${esc(t('quickActions'))}">
         <a class="quick" href="#schedule">
           <span class="quick__icon">${icon('calendar')}</span>
-          <span class="quick__text"><span class="quick__label">View schedule</span><span class="quick__hint">${pub.days.reduce((n, d) => n + d.items.length, 0)} functions over ${pub.days.length} days</span></span>
+          <span class="quick__text"><span class="quick__label">${esc(t('viewSchedule'))}</span><span class="quick__hint">${esc(t('functionsOverDays', { functions: functionCount, days: pub.days.length }))}</span></span>
           ${icon('arrow')}
         </a>
         <a class="quick quick--primary" href="#rsvp">
           <span class="quick__icon">${icon('send')}</span>
-          <span class="quick__text"><span class="quick__label">RSVP</span><span class="quick__hint">${pub.rsvp.deadline ? `Please reply by ${esc(dayMonth(pub.rsvp.deadline))}` : 'Opens soon'}</span></span>
+          <span class="quick__text"><span class="quick__label">${esc(t('rsvp'))}</span><span class="quick__hint">${pub.rsvp.deadline ? esc(t('replyBy', { date: F.dayMonth(pub.rsvp.deadline) })) : esc(t('opensSoon'))}</span></span>
           ${icon('arrow')}
         </a>
         <a class="quick" href="#venue">
           <span class="quick__icon">${icon('pin')}</span>
-          <span class="quick__text"><span class="quick__label">Get directions</span><span class="quick__hint">${pub.venue.landmark ? esc(pub.venue.landmark) : pub.venue.maps_url ? esc(pub.venue.name) : 'Map link coming soon'}</span></span>
+          <span class="quick__text"><span class="quick__label">${esc(t('getDirections'))}</span><span class="quick__hint">${pub.venue.landmark ? esc(tc(pub.venue.landmark)) : pub.venue.maps_url ? esc(tc(pub.venue.name)) : esc(t('mapComingSoon'))}</span></span>
           ${icon('arrow')}
         </a>
         <a class="quick" href="#updates">
           <span class="quick__icon">${icon('bell')}</span>
-          <span class="quick__text"><span class="quick__label">Latest update</span><span class="quick__hint">${latest ? esc(latest.title) : 'No updates yet'}</span></span>
+          <span class="quick__text"><span class="quick__label">${esc(t('latestUpdate'))}</span><span class="quick__hint">${latest ? esc(tc(latest.title)) : esc(t('noUpdatesYet'))}</span></span>
           ${icon('arrow')}
         </a>
       </nav>
@@ -601,10 +646,12 @@ ${renderHelp(pub)}
     <div class="container site-footer__inner">
       <p class="site-footer__names">${esc(couple)}</p>
       <p>${esc(range)} · ${esc(venueLine)}</p>
-      ${preview ? `<p class="site-footer__meta">Local preview · built ${esc(generatedAt.toISOString().slice(0, 10))}</p>` : ''}
+      ${embedded ? '' : languageSwitcher('lang--footer', names)}
+      ${preview ? `<p class="site-footer__meta">${esc(t('previewBuilt', { date: generatedAt.toISOString().slice(0, 10) }))}</p>` : ''}
     </div>
   </footer>
-  <template id="share-message">${esc(shareText)}</template>
+  <template id="share-message">${esc(t('shareMessage', { couple, range, venue: venueLine, url: '{url}' }))}</template>
+  <script type="application/json" id="i18n-strings">${JSON.stringify(scriptStrings).replace(/</g, '\\u003c')}</script>
 `;
 
   if (embedded) {
@@ -622,22 +669,30 @@ ${inlineJs}
 `;
   }
 
+  // On the English page, send guests who chose another language before
+  // straight to it. Each language page records the choice in app.js.
+  const redirect = L.code === 'en'
+    ? `<script>try{var l=localStorage.getItem('lang');if(l==='hi'||l==='bn')location.replace(l+'/'+location.hash)}catch(e){}</script>`
+    : '';
+
   return `<!doctype html>
-<html lang="en">
+<html lang="${esc(L.htmlLang)}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>${esc(couple)} · ${esc(range)}</title>
-  <meta name="description" content="${esc(`Schedule, venue and updates for ${couple}’s wedding, ${range}, ${venueLine}.`)}">
+  ${redirect}
+  <title>${esc(t('metaTitle', { couple, range }))}</title>
+  <meta name="description" content="${esc(t('metaDescription', { couple, range, venue: venueLine }))}">
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="${esc(`${couple}’s Wedding · ${range}`)}">
-  <meta property="og:description" content="${esc(`Schedule, venue, RSVP and day-of updates · ${venueLine}`)}">
+  <meta property="og:title" content="${esc(t('ogTitle', { couple, range }))}">
+  <meta property="og:description" content="${esc(t('ogDescription', { venue: venueLine }))}">
+  ${LANGUAGES.map((code) => `<link rel="alternate" hreflang="${code}" href="${hrefFor(code)}">`).join('\n  ')}
   <meta name="theme-color" content="#faf8f5">
   <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#1d1b19'/><text x='32' y='41' font-family='Georgia,serif' font-size='26' fill='#fff' text-anchor='middle'>${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}</text></svg>`)}">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="${base}styles.css">
   <script>document.documentElement.classList.add('js')</script>
-  <script src="app.js" defer></script>
+  <script src="${base}app.js" defer></script>
 </head>
 <body>
 ${content}</body>

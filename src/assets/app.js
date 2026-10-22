@@ -17,6 +17,20 @@
   var now = istNow();
   var today = now.slice(0, 10);
 
+  // Messages in the page's language, written into the page by the build.
+  var STRINGS = {};
+  try { STRINGS = JSON.parse(document.getElementById('i18n-strings').textContent); } catch (e) {}
+  function msg(key, n) {
+    return (STRINGS[key] || key).replace('{n}', n);
+  }
+
+  // ── Remember the guest's language ───────────────────────────
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lang]'), function (link) {
+    link.addEventListener('click', function () {
+      try { localStorage.setItem('lang', link.getAttribute('data-lang')); } catch (e) {}
+    });
+  });
+
   // ── Day tabs ────────────────────────────────────────────────
   var tablist = document.querySelector('[role="tablist"]');
   var tabs = tablist ? Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]')) : [];
@@ -56,9 +70,9 @@
     var end = countdown.getAttribute('data-end');
     var until = daysBetween(today, start);
     var text = '';
-    if (until > 1) text = until + ' days to go';
-    else if (until === 1) text = 'Tomorrow';
-    else if (today <= end) text = 'Day ' + (daysBetween(start, today) + 1) + ' · Happening today';
+    if (until > 1) text = msg('daysToGo', until);
+    else if (until === 1) text = msg('tomorrow');
+    else if (today <= end) text = msg('happeningToday', daysBetween(start, today) + 1);
     if (text) { countdown.textContent = text; countdown.hidden = false; }
   }
 
@@ -90,7 +104,7 @@
         frame.appendChild(iframe);
       }
       frame.hidden = !frame.hidden;
-      btn.querySelector('span').textContent = frame.hidden ? btn.getAttribute('data-label') : 'Hide map';
+      btn.querySelector('span').textContent = frame.hidden ? btn.getAttribute('data-label') : msg('hideMap');
       btn.setAttribute('aria-expanded', String(!frame.hidden));
     });
   });
@@ -141,7 +155,7 @@
       return Array.prototype.filter.call(dayBoxes, function (b) { return b.checked; }).map(function (b) { return b.value; });
     };
     var syncDays = function () {
-      dayBoxes[0].setCustomValidity(checkedDays().length ? '' : 'Please tick at least one day.');
+      dayBoxes[0].setCustomValidity(checkedDays().length ? '' : msg('tickOneDay'));
     };
     Array.prototype.forEach.call(dayBoxes, function (b) { b.addEventListener('change', syncDays); });
     syncDays();
@@ -190,8 +204,8 @@
     copyBtn.hidden = false;
     copyBtn.addEventListener('click', function () {
       navigator.clipboard.writeText(message).then(
-        function () { say('Message copied — paste it into WhatsApp or any chat.'); },
-        function () { say('Could not copy automatically. Please copy the page link instead.'); }
+        function () { say(msg('copied')); },
+        function () { say(msg('copyFailed')); }
       );
     });
   }
