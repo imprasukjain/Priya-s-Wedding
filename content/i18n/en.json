@@ -164,6 +164,11 @@
     "faqCalendarQ": "Can I add the functions to my calendar?",
     "faqCalendarA": "Yes — use “Add to calendar” under the schedule to download all the functions at once.",
 
+    "signupPrompt": "Dancing at the Ladies Sangeet? Add your song by {date}.",
+    "signupButton": "Sign up to dance",
+    "faqDanceQ": "How do I sign up to dance at the Sangeet?",
+    "faqDanceA": "Fill in the short form on the Sangeet card by {date}: your name, your song and, if you like, a YouTube link.",
+
     "daysToGo": "{n} days to go",
     "tomorrow": "Tomorrow",
     "happeningToday": "Day {n} · Happening today"

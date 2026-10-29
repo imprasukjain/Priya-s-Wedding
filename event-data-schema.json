@@ -469,6 +469,22 @@
             "null"
           ],
           "description": "Street address shown under the location, for functions away from the main venue"
+        },
+        "signup_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "pattern": "^https://(forms\\.gle|docs\\.google\\.com/forms)/",
+          "description": "Google Form for guests to sign up (e.g. to dance at the Sangeet)"
+        },
+        "signup_deadline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
         }
       },
       "additionalProperties": false
