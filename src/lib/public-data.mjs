@@ -39,6 +39,8 @@ export function toPublicData(eventData, updatesFile = { updates: [] }) {
       maps_url: item.maps_url ?? null,
       maps_embed_url: item.maps_embed_url ?? null,
       maps_label: item.maps_label ?? null,
+      signup_url: item.signup_url ?? null,
+      signup_deadline: item.signup_deadline ?? null,
       attire: attireFor(item.id),
     }));
 

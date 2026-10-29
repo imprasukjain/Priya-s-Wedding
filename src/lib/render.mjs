@@ -44,6 +44,7 @@ const ICONS = `
   <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M9 4.5 4 7l1.8 4 2.2-1v9.5h8V10l2.2 1L20 7l-5-2.5a3 3 0 0 1-6 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10 14M20.5 3.5l-6.5 17-4-6.5-6.5-4 17-6.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></symbol>
   <symbol id="i-id" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="11" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.8 15.5c.5-1.3 1.5-2 2.7-2s2.2.7 2.7 2M13.5 10h4.5M13.5 13.5h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2v12.5M9 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm11-2a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM9 9.5l11-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>`;
 
 const pending = (label = t('pending')) =>
@@ -99,6 +100,10 @@ function renderItem(item) {
             ${location}
             ${map}
             ${item.attire ? `<p class="event__meta">${icon('shirt')}<span>${esc(tc(item.attire))}</span></p>` : ''}
+            ${item.signup_url ? `<div class="event__signup">
+              ${item.signup_deadline ? `<p>${esc(t('signupPrompt', { date: F.dayMonth(item.signup_deadline) }))}</p>` : ''}
+              <a class="btn btn--primary" href="${esc(item.signup_url)}" target="_blank" rel="noopener">${icon('music')}<span>${esc(t('signupButton'))}</span></a>
+            </div>` : ''}
             <span class="event__next" hidden>${esc(t('upNext'))}</span>
           </div>
         </li>`;
@@ -495,6 +500,8 @@ function renderHelp(pub) {
     [t('faqStationQ'), tc(pub.travel.transport.note) || t('transportSoon')],
     ...(pub.rsvp.deadline ? [[t('faqRsvpQ'), t('faqRsvpA', { date: F.longDay(pub.rsvp.deadline) })]] : []),
     ...(pub.travel.check_in_note ? [[t('faqIdQ'), tc(pub.travel.check_in_note)]] : []),
+    ...pub.days.flatMap((d) => d.items).filter((i) => i.signup_url && i.signup_deadline)
+      .map((i) => [t('faqDanceQ'), t('faqDanceA', { date: F.dayMonth(i.signup_deadline) })]),
     [t('faqChangesQ'), t('faqChangesA')],
     ...(features.downloads ? [[t('faqCalendarQ'), t('faqCalendarA')]] : []),
   ];

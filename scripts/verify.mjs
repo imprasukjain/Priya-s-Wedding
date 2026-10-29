@@ -104,6 +104,13 @@ for (const item of eventData.schedule.filter((i) => i.location_needed === false)
   const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
   check(`${item.title} shows no location line`, !card.includes('Area at venue to be confirmed') && !card.includes('event__meta--pending'));
 }
+for (const item of eventData.schedule.filter((i) => i.signup_url)) {
+  const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+  check(`${item.title} card links to its sign-up form${item.signup_deadline ? ' with the deadline' : ''}`,
+    card.includes(`href="${item.signup_url}"`) && card.includes('Sign up to dance') &&
+    (!item.signup_deadline || card.includes(`by ${Number(item.signup_deadline.slice(8))} November`)) &&
+    panelOf('help').includes('How do I sign up to dance'));
+}
 for (const item of eventData.schedule.filter((i) => i.maps_url)) {
   const card = html.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
   check(`${item.title} card links to its approved map`, card.includes(`href="${item.maps_url}"`));
@@ -145,7 +152,7 @@ check('Page is kept out of search engines (noindex)', html.includes('content="no
 const rsvpChat = rsvp.whatsapp_number ? `https://wa.me/91${rsvp.whatsapp_number}` : null;
 const approvedUrls = new Set(
   [venue.maps_url, venue.maps_embed_url, eventData.rsvp?.url,
-    ...eventData.schedule.flatMap((i) => [i.maps_url, i.maps_embed_url]),
+    ...eventData.schedule.flatMap((i) => [i.maps_url, i.maps_embed_url, i.signup_url]),
     ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url])]
     .filter(Boolean).map((u) => u.replace(/&/g, '&amp;')),
 );
@@ -184,6 +191,10 @@ for (const code of LANGUAGES) {
     return !card.includes(tc(item.title)) || (item.location && !card.includes(tc(item.location)));
   });
   check(`[${code}] function names and places are shown translated`, untranslated.length === 0, untranslated.map((i) => i.id).join(', '));
+  for (const item of eventData.schedule.filter((i) => i.signup_url)) {
+    const card = page.split(`data-schedule-item="${item.id}"`)[1]?.split('</li>')[0] ?? '';
+    check(`[${code}] ${item.title} card links to its sign-up form`, card.includes(`href="${item.signup_url}"`));
+  }
   check(`[${code}] stylesheet and script load from the site root`, page.includes('href="../styles.css"') && page.includes('src="../app.js"'));
 }
 

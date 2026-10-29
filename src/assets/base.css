@@ -394,6 +394,9 @@ textarea.input { resize: vertical; min-height: 72px; }
   transition: background-color .2s, border-color .2s, color .2s;
 }
 .event__address { display: block; color: var(--muted); font-size: .8125rem; }
+.event__signup { display: grid; gap: .5rem; justify-items: start; margin-top: .75rem; padding: .75rem .875rem; border-radius: var(--radius-sm); background: var(--accent-soft); }
+.event__signup p { font-size: .875rem; font-weight: 500; color: var(--ink); }
+.event__signup .btn { min-height: 40px; padding: 0 1rem; font-size: .875rem; white-space: nowrap; }
 .event__maplabel { margin-top: .5rem; color: var(--muted); font-size: .8125rem; }
 .event__body .map { margin-top: .5rem; }
 .event__body .map .btn { min-height: 40px; padding: 0 .9rem; font-size: .875rem; }
