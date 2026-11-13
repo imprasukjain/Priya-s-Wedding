@@ -1,0 +1,9 @@
+{
+  "site_url": "https://imprasukjain.github.io/Priya-s-Wedding/",
+  "default_lead_minutes": 30,
+  "items": {
+    "lunch-20-nov": { "kind": "food", "meal": "lunch", "lead_minutes": 0 },
+    "dinner-20-nov": { "kind": "food", "meal": "dinner", "lead_minutes": 0 },
+    "dinner-21-nov": { "kind": "food", "meal": "dinner", "lead_minutes": 0 }
+  }
+}

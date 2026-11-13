@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/wedding-announcements.schema.json",
+  "title": "WhatsApp announcement settings",
+  "description": "Every public schedule item gets an announcement. Entries in items override the lead time or mark an item as a food notice (which needs 'Confirm food ready' before it can be sent).",
+  "type": "object",
+  "required": ["site_url", "default_lead_minutes", "items"],
+  "properties": {
+    "site_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "default_lead_minutes": { "type": "integer", "minimum": 0, "maximum": 720 },
+    "items": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9-]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "kind": { "enum": ["function", "food"] },
+          "meal": { "enum": ["lunch", "dinner"] },
+          "lead_minutes": { "type": "integer", "minimum": 0, "maximum": 720 },
+          "skip": { "type": "boolean", "description": "true to leave this function out of the announcements" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

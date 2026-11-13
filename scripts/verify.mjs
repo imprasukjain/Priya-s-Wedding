@@ -6,12 +6,13 @@ import { fileURLToPath } from 'node:url';
 import { loadValidatedData } from '../src/lib/load-data.mjs';
 import { formatTime, icsUtcStamp } from '../src/lib/format.mjs';
 import { LANGUAGES } from '../src/lib/i18n.mjs';
+import { shiftIst } from '../src/lib/announcements.mjs';
 
 const dist = new URL('../dist/', import.meta.url);
 const results = [];
 const check = (name, ok, detail = '') => results.push({ name, ok: Boolean(ok), detail });
 
-const { eventData } = await loadValidatedData();
+const { eventData, announcements } = await loadValidatedData();
 check('event-data.json and content/updates.json are schema-valid', true);
 
 const files = (await readdir(dist, { recursive: true, withFileTypes: true }))
@@ -153,17 +154,62 @@ const rsvpChat = rsvp.whatsapp_number ? `https://wa.me/91${rsvp.whatsapp_number}
 const approvedUrls = new Set(
   [venue.maps_url, venue.maps_embed_url, eventData.rsvp?.url,
     ...eventData.schedule.flatMap((i) => [i.maps_url, i.maps_embed_url, i.signup_url]),
-    ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url])]
+    ...travel.stays.flatMap((st) => [st.maps_url, st.maps_embed_url]),
+    announcements.site_url]
     .filter(Boolean).map((u) => u.replace(/&/g, '&amp;')),
 );
 const foundUrls = [...everything.matchAll(/https?:\/\/[^\s"'<>)]+/g)].map((m) => m[0])
   .filter((u) => u !== 'http://www.w3.org/2000/svg');
-const unapproved = foundUrls.filter((u) => !approvedUrls.has(u) && !(rsvpChat && (u === rsvpChat || u.startsWith(`${rsvpChat}?text=`))));
+const unapproved = foundUrls.filter((u) => !approvedUrls.has(u) &&
+  !(rsvpChat && (u === rsvpChat || u.startsWith(`${rsvpChat}?text=`))) &&
+  !u.startsWith('https://wa.me/?text=') && // announcements: WhatsApp asks the coordinator which chat
+  !u.startsWith(`${announcements.site_url}announce/`));
 check('Only approved map/RSVP URLs appear in output', unapproved.length === 0, unapproved.join(', '));
 check('No WhatsApp API use; click-to-chat only to the approved RSVP number',
   !/api\.whatsapp|graph\.facebook|whatsapp:\/\//i.test(everything) &&
   [...everything.matchAll(/wa\.me\/(\d+)/g)].every((m) => m[1] === `91${rsvp.whatsapp_number}`));
 check('Map embeds load only on request (no iframe in the page source)', !/<iframe/i.test(html));
+
+// 7. Coordinator announcements page.
+{
+  const page = outputs['announce/index.html'] ?? '';
+  const aIcs = outputs['announce/announcements.ics'] ?? '';
+  const expected = eventData.schedule.filter((i) => i.display_on_website && !announcements.items[i.id]?.skip);
+  const cardOf = (id) => page.split(`id="a-${id}"`)[1]?.split('</article>')[0] ?? '';
+  const decode = (s) => s.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+  check('Announcements page built and kept out of search engines', page.includes('content="noindex, nofollow"'));
+  check(`Announcements page has one card per function (${expected.length})`, (page.match(/<article class="ann"/g) || []).length === expected.length);
+  check('Guest pages never link to the announcements page',
+    LANGUAGES.every((c) => !(outputs[c === 'en' ? 'index.html' : `${c}/index.html`] ?? '').includes('announce/')));
+  const wrong = expected.filter((item) => {
+    const s = announcements.items[item.id] ?? {};
+    const food = s.kind === 'food';
+    const lead = s.lead_minutes ?? (food ? 0 : announcements.default_lead_minutes);
+    const due = shiftIst(item.date, item.start_time, -lead);
+    const card = cardOf(item.id);
+    const message = decode(card.split('data-msg>')[1]?.split('</textarea>')[0] ?? '');
+    const href = decode(card.match(/data-wa href="([^"]+)"/)?.[1] ?? '');
+    return !card.includes(`data-due="${due.date}T${due.time}"`) ||
+      card.includes(`data-food="${food}"`) === false ||
+      (food ? !message.includes('is ready') : !message.includes(formatTime(item.start_time))) ||
+      (item.location && !message.includes(item.location)) ||
+      (food && !card.includes('data-food-confirm')) ||
+      href !== `https://wa.me/?text=${encodeURIComponent(message)}`;
+  });
+  check('Every announcement has the right due time, time, place and WhatsApp text', wrong.length === 0, wrong.map((i) => i.id).join(', '));
+  check(`Reminder calendar has ${expected.length} alerts at the due times`,
+    (aIcs.match(/BEGIN:VALARM/g) || []).length === expected.length &&
+    expected.every((item) => {
+      const s = announcements.items[item.id] ?? {};
+      const lead = s.lead_minutes ?? (s.kind === 'food' ? 0 : announcements.default_lead_minutes);
+      const due = shiftIst(item.date, item.start_time, -lead);
+      return aIcs.includes(`DTSTART:${icsUtcStamp(due.date, due.time)}`);
+    }));
+  const aJs = outputs['announce/announce.js'] ?? '';
+  check('Announcements never send anything (no network calls; only this phone stores ticks)',
+    !/fetch\(|XMLHttpRequest|sendBeacon|api\.whatsapp/.test(aJs) &&
+    [...aJs.matchAll(/localStorage\.setItem\(\s*(\w+)/g)].every((m) => m[1] === 'KEY'));
+}
 
 // 6. Hindi and Bangla pages: same schedule, same links, translated text.
 const scheduleSignature = (page) => [...page.matchAll(/data-schedule-item="([^"]+)" data-start="([^"]+)"/g)].map((m) => `${m[1]}@${m[2]}`).join(',');

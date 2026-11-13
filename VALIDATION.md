@@ -6,7 +6,7 @@ Run everything with:
 
 ```bash
 npm install
-npm run check      # unit tests + build + 89 acceptance checks
+npm run check      # unit tests + build + 95 acceptance checks
 ```
 
 ## Why private items cannot reach the public output
@@ -55,6 +55,9 @@ The unit tests (`test/public-data.test.mjs`) also check that the filter still dr
 | Calendar per language | Pass | `hi/schedule.ics` and `bn/schedule.ics` have all 12 functions with translated titles |
 | WhatsApp-only material absent in every language | Pass | The output scan covers every file in `dist/`, including `hi/` and `bn/` |
 | Ladies Sangeet dance sign-up | Pass | The Sangeet card in every language links to the approved Google Form, with "by 15 November" and a Help question |
+| Announcements page | Pass | `announce/` has one card per function with the right due time, time and place; the WhatsApp link carries exactly the message shown; meals need "Confirm food is ready"; kept out of search engines and never linked from guest pages |
+| Announcement reminders | Pass | `announce/announcements.ics` has one alert per announcement at its due time |
+| Announcements never send anything | Pass | No network calls; WhatsApp opens with the message and the coordinator chooses the group and presses Send |
 | Only the language choice is stored | Pass | `localStorage` is used for the key `lang` only; nothing is sent anywhere |
 
 ## Pre-publish review aids
