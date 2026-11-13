@@ -16,13 +16,14 @@ import { toPublicData } from '../src/lib/public-data.mjs';
 import { renderPage } from '../src/lib/render.mjs';
 import { renderIcs } from '../src/lib/ics.mjs';
 import { LANGUAGES, loadLanguage } from '../src/lib/i18n.mjs';
+import { buildAnnouncements, renderAnnouncePage, renderAnnounceIcs } from '../src/lib/announcements.mjs';
 
 const root = new URL('../', import.meta.url);
 const out = new URL('dist/', root);
 const theme = process.env.THEME || 'minimal';
 const preview = process.env.PREVIEW !== 'false';
 
-const { eventData, updates } = await loadValidatedData();
+const { eventData, updates, announcements } = await loadValidatedData();
 const pub = toPublicData(eventData, updates);
 const generatedAt = new Date();
 
@@ -57,5 +58,18 @@ for (const code of LANGUAGES) {
   }
 }
 
+// Coordinator's WhatsApp announcements page (not linked from the guest site).
+const en = loadLanguage('en');
+const announceList = buildAnnouncements(pub, announcements, en, loadLanguage('hi'));
+const announceDir = new URL('announce/', out);
+await mkdir(announceDir, { recursive: true });
+await Promise.all([
+  writeFile(new URL('index.html', announceDir), renderAnnouncePage(announceList, { en, generatedAt })),
+  writeFile(new URL('announcements.ics', announceDir),
+    renderAnnounceIcs(announceList, { siteUrl: announcements.site_url, generatedAt, en })),
+  writeFile(new URL('announce.js', announceDir), await readFile(new URL('src/assets/announce.js', root), 'utf8')),
+  writeFile(new URL('announce.css', announceDir), await readFile(new URL('src/assets/announce.css', root), 'utf8')),
+]);
+
 const counts = pub.days.map((d) => `${d.date}: ${d.items.length}`).join(', ');
-console.log(`Built dist/ in ${LANGUAGES.join(', ')} (theme: ${theme}${preview ? ', preview' : ''}) — public items ${counts}`);
+console.log(`Built dist/ in ${LANGUAGES.join(', ')} (theme: ${theme}${preview ? ', preview' : ''}) — public items ${counts}; ${announceList.length} announcements`);

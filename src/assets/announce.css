@@ -1,0 +1,48 @@
+/* Coordinator announcements page. Uses the theme tokens from styles.css. */
+
+.announce { padding-bottom: 4rem; }
+.ann-top { padding: 2.5rem 0 1.5rem; background: var(--hero-glow); }
+.ann-top__title { margin-top: .5rem; font-size: clamp(1.75rem, 7vw, 2.5rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; }
+.ann-top__clock { margin-top: .5rem; color: var(--muted); font-size: .9375rem; font-variant-numeric: tabular-nums; }
+
+.ann-intro { display: grid; gap: .75rem; margin-bottom: 2rem; }
+.ann-intro__title { font-size: 1.0625rem; font-weight: 600; }
+.ann-intro ol { margin: 0; padding-left: 1.25rem; display: grid; gap: .35rem; color: var(--ink-2); font-size: .9375rem; }
+.ann-intro__fine { color: var(--muted); font-size: .8125rem; }
+
+.ann-section-title { margin: 2rem 0 1rem; font-size: 1.25rem; font-weight: 500; letter-spacing: -0.01em; }
+
+.ann-ready { padding: 1rem 1.125rem; border-radius: var(--radius); background: var(--accent-soft); border: 1.5px solid var(--accent); }
+.ann-ready .ann-section-title { margin: 0 0 .5rem; color: var(--accent); }
+.ann-ready__list { margin: 0; padding-left: 1.25rem; display: grid; gap: .25rem; }
+.ann-ready__list a { font-weight: 600; }
+
+.ann {
+  display: grid; gap: .75rem; margin-bottom: 1rem; padding: 1.125rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  scroll-margin-top: 1rem;
+}
+.ann--ready { border: 1.5px solid var(--accent); }
+.ann--sent { opacity: .7; }
+.ann__head { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.ann__when { color: var(--muted); font-size: .8125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ann__title { margin-top: .1rem; font-size: 1.125rem; font-weight: 600; }
+.ann__status {
+  flex: none; padding: .2rem .6rem; border-radius: 999px; white-space: nowrap;
+  font-size: .75rem; font-weight: 600; background: var(--surface-tint); color: var(--muted);
+}
+.ann__status--ready { background: var(--accent); color: var(--accent-ink); }
+.ann__status--past { background: var(--provisional-soft); color: var(--provisional); }
+.ann__status--sent { background: var(--confirmed-soft); color: var(--confirmed); }
+.ann__remind { color: var(--ink-2); font-size: .875rem; }
+.ann__msg { font-size: .9375rem; line-height: 1.5; resize: vertical; min-height: 6rem; overflow: hidden; }
+.ann__food { display: grid; gap: .35rem; justify-items: start; }
+.ann__actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ann__note { font-size: .875rem; color: var(--provisional); font-weight: 500; }
+.ann__food .ann__note { color: var(--confirmed); }
+.btn.is-disabled { opacity: .45; cursor: not-allowed; }
+.btn--link { background: none; border: 0; padding: 0 .25rem; min-height: 44px; color: var(--muted); text-decoration: underline; cursor: pointer; }
+
+.ann-log { margin-top: 2rem; display: grid; gap: .75rem; }
+.ann-log .ann-section-title { margin: 0; }
+.ann-log__list { margin: 0; padding-left: 1.25rem; display: grid; gap: .2rem; color: var(--ink-2); font-size: .875rem; font-variant-numeric: tabular-nums; }

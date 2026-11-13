@@ -10,7 +10,7 @@ A mobile-first static site with Welcome, Schedule, Venue, Travel & stay, RSVP, D
 npm install
 npm run build      # validates the data and writes dist/
 npm run preview    # serves dist/ at http://localhost:4173
-npm run check      # unit tests + 89 acceptance checks (see VALIDATION.md)
+npm run check      # unit tests + 95 acceptance checks (see VALIDATION.md)
 ```
 
 You can also open `dist/index.html` directly in a browser.
@@ -41,6 +41,17 @@ Translations live in `content/i18n/`:
 - `format` – month and weekday names, and the words for parts of the day (सुबह, शाम, সকাল, সন্ধ্যা…).
 
 RSVPs sent from any language reach WhatsApp in English, so every RSVP the family receives reads the same way.
+
+## WhatsApp announcements (coordinator)
+
+A private page for the person sending announcements to the family WhatsApp group: **https://imprasukjain.github.io/Priya-s-Wedding/announce/**. It is not linked from the guest site and is kept out of search engines. It contains nothing that isn't already on the public site.
+
+- One card per function, built from `event-data.json` at the same time as the website, so times and places always match. Meals (Lunch on 20 Nov, both Dinners) are food notices: they need **Confirm food is ready** before WhatsApp opens.
+- When an announcement is due (30 minutes before a function, on time for meals), it appears under **Ready now**. Edit the message if needed, tap **Open WhatsApp**, choose the group and press **Send**, then tap **Mark sent**. Nothing is ever sent automatically, because WhatsApp offers no way for a website to post to a group.
+- **Add reminders to my calendar** downloads `announcements.ics`, so the phone's own calendar alerts at each due time and links straight to that card.
+- Ticks, edits and the activity log are saved on that phone only.
+
+Lead times and which items are food notices are set in `content/announcements.json`.
 
 ## Live site
 
