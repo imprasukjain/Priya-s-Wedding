@@ -169,6 +169,17 @@
     "faqDanceQ": "How do I sign up to dance at the Sangeet?",
     "faqDanceA": "Fill in the short form on the Sangeet card by {date}: your name, your song and, if you like, a YouTube link.",
 
+    "thanksMetaTitle": "{couple} · Just married",
+    "thanksMetaDescription": "Congratulations to {couple}, and thank you to everyone who celebrated with us.",
+    "thanksEyebrow": "Just married",
+    "thanksDate": "{range} · {place}",
+    "congratsTitle": "Congratulations to the couple",
+    "congratsText": "Wishing {p1} and {p2} a lifetime of love, laughter and togetherness. May every day of their journey be as joyful as the celebrations we shared.",
+    "thanksTitle": "Thank you",
+    "thanksText": "To every family member and friend who travelled, blessed, danced and celebrated with us — thank you. Your presence, love and help made the wedding truly special, and a success.",
+    "thanksSign": "With love and gratitude,",
+    "thanksFamilies": "the families of {couple}",
+
     "daysToGo": "{n} days to go",
     "tomorrow": "Tomorrow",
     "happeningToday": "Day {n} · Happening today"

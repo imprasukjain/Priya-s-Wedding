@@ -527,3 +527,18 @@ textarea.input { resize: vertical; min-height: 72px; }
   .event { break-inside: avoid; }
   .event__body { border-color: #ccc; }
 }
+
+/* Thank-you page shown after the wedding (content/site.json "mode": "thank_you"). */
+.thanks-page { background: var(--hero-glow), var(--bg); background-repeat: no-repeat; }
+.thanks { min-height: 100vh; padding: 3rem 0 4rem; text-align: center; }
+.thanks__inner { display: grid; justify-items: center; gap: 1rem; max-width: 40rem; }
+.thanks__monogram { margin-top: 1rem; font-family: var(--font-accent); font-style: italic; font-size: 1.5rem; color: var(--accent); }
+.thanks__names { margin-top: .25rem; }
+.thanks__date { color: var(--ink-2); }
+.thanks__card { width: 100%; margin-top: 1rem; text-align: left; display: grid; gap: .5rem; }
+.thanks__card p { color: var(--ink-2); font-size: 1.0625rem; line-height: 1.7; }
+.thanks__title { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+.thanks__sign { margin-top: 1.5rem; color: var(--ink-2); line-height: 1.6; }
+.thanks__families { font-family: var(--font-accent); font-style: italic; font-size: 1.375rem; color: var(--ink); }
+:lang(hi) .thanks__families, :lang(bn) .thanks__families { font-family: var(--font-sans); font-style: normal; font-weight: 500; font-size: 1.125rem; }
+@media (min-width: 48rem) { .thanks { padding-top: 5rem; } }

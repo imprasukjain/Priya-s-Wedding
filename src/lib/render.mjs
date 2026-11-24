@@ -706,3 +706,70 @@ ${content}</body>
 </html>
 `;
 }
+
+// After the wedding (content/site.json "mode": "thank_you"): a single page per
+// language with congratulations to the couple and thanks to everyone who came.
+// No schedule, contacts, forms or links are published in this mode.
+export function renderThankYouPage(pub, { lang }) {
+  L = lang;
+  F = lang.fmt;
+  const names = languageNames();
+  const base = L.code === 'en' ? '' : '../';
+  const p1 = tc(pub.couple.partner_one);
+  const p2 = tc(pub.couple.partner_two);
+  const couple = `${p1} & ${p2}`;
+  const range = F.dateRange(pub.event_dates);
+  const place = tc(pub.venue.locality ?? pub.venue.name);
+  const monogram = `${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}`;
+  const redirect = L.code === 'en'
+    ? `<script>try{var l=localStorage.getItem('lang');if(l==='hi'||l==='bn')location.replace(l+'/')}catch(e){}</script>`
+    : '';
+
+  return `<!doctype html>
+<html lang="${esc(L.htmlLang)}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  ${redirect}
+  <title>${esc(t('thanksMetaTitle', { couple }))}</title>
+  <meta name="description" content="${esc(t('thanksMetaDescription', { couple }))}">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${esc(t('thanksMetaTitle', { couple }))}">
+  <meta property="og:description" content="${esc(t('thanksMetaDescription', { couple }))}">
+  ${LANGUAGES.map((code) => `<link rel="alternate" hreflang="${code}" href="${hrefFor(code)}">`).join('\n  ')}
+  <meta name="theme-color" content="#faf8f5">
+  <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='#1d1b19'/><text x='32' y='41' font-family='Georgia,serif' font-size='26' fill='#fff' text-anchor='middle'>${pub.couple.partner_one[0]}&amp;${pub.couple.partner_two[0]}</text></svg>`)}">
+  <link rel="stylesheet" href="${base}styles.css">
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="${base}app.js" defer></script>
+</head>
+<body class="thanks-page">
+  <main id="main" class="thanks">
+    <div class="container thanks__inner">
+      ${languageSwitcher('lang--hero', names)}
+      <p class="thanks__monogram" aria-hidden="true">${monogram}</p>
+      <p class="eyebrow">${esc(t('thanksEyebrow'))}</p>
+      <h1 class="hero__names thanks__names">
+        <span>${esc(p1)}</span>
+        <span class="hero__amp" aria-hidden="true">&amp;</span><span class="visually-hidden"> ${esc(t('and'))} </span>
+        <span>${esc(p2)}</span>
+      </h1>
+      <p class="thanks__date">${esc(t('thanksDate', { range, place }))}</p>
+
+      <section class="card thanks__card" aria-labelledby="congrats-title">
+        <h2 class="thanks__title" id="congrats-title">${esc(t('congratsTitle'))}</h2>
+        <p>${esc(t('congratsText', { p1, p2 }))}</p>
+      </section>
+      <section class="card thanks__card" aria-labelledby="thanks-title">
+        <h2 class="thanks__title" id="thanks-title">${esc(t('thanksTitle'))}</h2>
+        <p>${esc(t('thanksText'))}</p>
+      </section>
+
+      <p class="thanks__sign">${esc(t('thanksSign'))}<br><span class="thanks__families">${esc(t('thanksFamilies', { couple }))}</span></p>
+    </div>
+  </main>
+</body>
+</html>
+`;
+}

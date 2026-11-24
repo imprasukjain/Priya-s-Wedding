@@ -7,13 +7,17 @@
 // Also writes dist/embedded/index.html: a single-file variant for the private
 // claude.ai preview (inlined CSS/JS; downloads, print, map embeds, share sheet off).
 //
+// After the wedding, content/site.json "mode": "thank_you" publishes only a
+// congratulations and thank-you page per language; "wedding" restores the full
+// guest site and the announcements page.
+//
 // Each language in content/i18n/ is written to its own folder: English at the
 // root, Hindi at hi/, Bangla at bn/. Untranslated event text is listed as a
 // warning and shown in English rather than failing the build.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { loadValidatedData } from '../src/lib/load-data.mjs';
 import { toPublicData } from '../src/lib/public-data.mjs';
-import { renderPage } from '../src/lib/render.mjs';
+import { renderPage, renderThankYouPage } from '../src/lib/render.mjs';
 import { renderIcs } from '../src/lib/ics.mjs';
 import { LANGUAGES, loadLanguage } from '../src/lib/i18n.mjs';
 import { buildAnnouncements, renderAnnouncePage, renderAnnounceIcs } from '../src/lib/announcements.mjs';
@@ -23,7 +27,7 @@ const out = new URL('dist/', root);
 const theme = process.env.THEME || 'minimal';
 const preview = process.env.PREVIEW !== 'false';
 
-const { eventData, updates, announcements } = await loadValidatedData();
+const { eventData, updates, announcements, site } = await loadValidatedData();
 const pub = toPublicData(eventData, updates);
 const generatedAt = new Date();
 
@@ -36,6 +40,23 @@ const css = (
 ).join('\n');
 
 await rm(out, { recursive: true, force: true });
+
+if (site.mode === 'thank_you') {
+  await mkdir(out, { recursive: true });
+  await Promise.all([
+    writeFile(new URL('styles.css', out), css),
+    writeFile(new URL('app.js', out), js),
+  ]);
+  for (const code of LANGUAGES) {
+    const lang = loadLanguage(code);
+    const dir = new URL(lang.dir, out);
+    await mkdir(dir, { recursive: true });
+    await writeFile(new URL('index.html', dir), renderThankYouPage(pub, { lang }));
+  }
+  console.log(`Built dist/ in ${LANGUAGES.join(', ')} — thank-you page only (content/site.json mode "thank_you")`);
+  process.exit(0);
+}
+
 await mkdir(new URL('embedded/', out), { recursive: true });
 await Promise.all([
   writeFile(new URL('styles.css', out), css),

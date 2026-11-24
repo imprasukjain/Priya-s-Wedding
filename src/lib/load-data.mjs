@@ -28,19 +28,22 @@ function assertValid(ajv, schema, data, label) {
 }
 
 export async function loadValidatedData() {
-  const [eventData, eventSchema, updates, updatesSchema, announcements, announcementsSchema] = await Promise.all([
+  const [eventData, eventSchema, updates, updatesSchema, announcements, announcementsSchema, site, siteSchema] = await Promise.all([
     readJson('event-data.json'),
     readJson('event-data-schema.json'),
     readJson('content/updates.json'),
     readJson('content/updates.schema.json'),
     readJson('content/announcements.json'),
     readJson('content/announcements.schema.json'),
+    readJson('content/site.json'),
+    readJson('content/site.schema.json'),
   ]);
   const ajv = validator();
   assertValid(ajv, eventSchema, eventData, 'event-data.json');
   assertValid(ajv, updatesSchema, updates, 'content/updates.json');
   assertValid(ajv, announcementsSchema, announcements, 'content/announcements.json');
+  assertValid(ajv, siteSchema, site, 'content/site.json');
   const unknown = Object.keys(announcements.items).filter((id) => !eventData.schedule.some((i) => i.id === id));
   if (unknown.length) throw new Error(`content/announcements.json refers to unknown schedule ids: ${unknown.join(', ')}`);
-  return { eventData, updates, announcements };
+  return { eventData, updates, announcements, site };
 }
