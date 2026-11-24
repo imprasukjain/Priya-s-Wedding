@@ -53,6 +53,15 @@ A private page for the person sending announcements to the family WhatsApp group
 
 Lead times and which items are food notices are set in `content/announcements.json`.
 
+## After the wedding
+
+`content/site.json` decides what is published:
+
+- `"mode": "thank_you"` (current): every language shows only a congratulations message to Priya & Sagar and a thank-you to everyone who came. The schedule, contacts, RSVP, sign-up form, calendar downloads and the announcements page are not published. `npm run check` runs a separate set of 20 checks for this mode.
+- `"mode": "wedding"`: publishes the full guest site and the announcements page again. All of that content is still in the repository.
+
+The thank-you text is in `content/i18n/<lang>.json` (the `thanks…` and `congrats…` strings).
+
 ## Live site
 
 **https://imprasukjain.github.io/Priya-s-Wedding/**

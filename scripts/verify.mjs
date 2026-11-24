@@ -12,7 +12,7 @@ const dist = new URL('../dist/', import.meta.url);
 const results = [];
 const check = (name, ok, detail = '') => results.push({ name, ok: Boolean(ok), detail });
 
-const { eventData, announcements } = await loadValidatedData();
+const { eventData, announcements, site } = await loadValidatedData();
 check('event-data.json and content/updates.json are schema-valid', true);
 
 const files = (await readdir(dist, { recursive: true, withFileTypes: true }))
@@ -21,6 +21,43 @@ const files = (await readdir(dist, { recursive: true, withFileTypes: true }))
 const outputs = Object.fromEntries(
   await Promise.all(files.map(async (f) => [f, await readFile(new URL(f, dist), 'utf8')])),
 );
+const report = () => {
+  const failed = results.filter((r) => !r.ok);
+  for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.detail ? ` (${r.detail})` : ''}`);
+  console.log(`\n${results.length - failed.length}/${results.length} checks passed.`);
+  process.exit(failed.length ? 1 : 0);
+};
+
+// After the wedding: only the thank-you page, in every language, and nothing else.
+if (site.mode === 'thank_you') {
+  const everything = Object.values(outputs).join('\n');
+  const pageFor = (code) => outputs[code === 'en' ? 'index.html' : `${code}/index.html`] ?? '';
+  for (const code of LANGUAGES) {
+    const page = pageFor(code);
+    const strings = JSON.parse(await readFile(new URL(`../content/i18n/${code}.json`, import.meta.url), 'utf8'));
+    const tc = (text) => strings.content[text] ?? text;
+    const escHtml = (s) => s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    const others = LANGUAGES.filter((c) => c !== code);
+    const hrefTo = (c) => (code === 'en' ? (c === 'en' ? './' : `${c}/`) : c === 'en' ? '../' : `../${c}/`);
+    check(`[${code}] thank-you page built with lang="${code}"`, page.includes(`<html lang="${code}">`));
+    check(`[${code}] names the couple`, page.includes(tc(eventData.couple.partner_one)) && page.includes(tc(eventData.couple.partner_two)));
+    check(`[${code}] has the congratulations and thank-you messages`,
+      page.includes(escHtml(strings.ui.congratsTitle)) && page.includes(escHtml(strings.ui.thanksTitle)) &&
+      page.includes(escHtml(strings.ui.thanksText)));
+    check(`[${code}] language links to ${others.join(' and ')}`, others.every((c) => page.includes(`href="${hrefTo(c)}" hreflang="${c}"`)));
+    check(`[${code}] kept out of search engines`, page.includes('content="noindex, nofollow"'));
+  }
+  const phones = eventData.contacts.flatMap((c) => c.phones);
+  check('No schedule, contacts, forms or announcements are published',
+    LANGUAGES.every((c) => !/data-schedule-item|tel:|wa\.me|forms\.gle|data-rsvp/.test(pageFor(c))) &&
+    phones.every((p) => !everything.includes(p) && !everything.includes(`${p.slice(0, 5)} ${p.slice(5)}`)) &&
+    Object.keys(outputs).every((f) => !/announce|schedule\.ics|embedded/.test(f)));
+  const urls = [...everything.matchAll(/https?:\/\/[^\s"'<>)]+/g)].map((m) => m[0]).filter((u) => u !== 'http://www.w3.org/2000/svg');
+  check('No external links on the thank-you page', urls.length === 0, urls.join(', '));
+  for (const word of ['notification_material', 'open_questions']) check(`No "${word}" anywhere in the output`, !everything.toLowerCase().includes(word));
+  report();
+}
+
 check('Preview variant built and free of downloads, print, map embeds and share sheet',
   outputs['embedded/index.html'] && !/<html[\s>]|<head[\s>]|download>|data-action="print"|data-map-src|data-action="share"/.test(outputs['embedded/index.html'].replace(/<script>[\s\S]*?<\/script>/g, '')));
 const html = outputs['index.html'];
@@ -244,7 +281,4 @@ for (const code of LANGUAGES) {
   check(`[${code}] stylesheet and script load from the site root`, page.includes('href="../styles.css"') && page.includes('src="../app.js"'));
 }
 
-const failed = results.filter((r) => !r.ok);
-for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.detail ? ` (${r.detail})` : ''}`);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed.`);
-process.exit(failed.length ? 1 : 0);
+report();

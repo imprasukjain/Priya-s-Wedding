@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/wedding-site.schema.json",
+  "title": "Site mode",
+  "description": "\"wedding\" publishes the full guest site and the announcements page. \"thank_you\" publishes only a congratulations and thank-you page (in every language) after the wedding.",
+  "type": "object",
+  "required": ["mode"],
+  "properties": { "mode": { "enum": ["wedding", "thank_you"] } },
+  "additionalProperties": false
+}
